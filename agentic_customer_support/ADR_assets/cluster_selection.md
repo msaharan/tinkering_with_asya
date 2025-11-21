@@ -86,3 +86,8 @@ This approach allows you to run and compare both Asya- and Ray-based services on
 [8](https://www.reddit.com/r/cloudcomputing/comments/1k9rkdx/runpod_how_to_use_the_same_project_files_and/)
 [9](https://www.runpod.io/blog/deploy-multimodal-models-runpod)
 [10](https://www.runpod.io/blog/instant-clusters-runpod)
+
+## decision
+- RunPod
+    - start with RunPod because it's advertised for hackathon projects in [this](https://www.runpod.io/articles/guides/deploying-your-ai-hackathon-project-in-a-weekend-with-runpod) article
+    - change later if needed
