@@ -59,3 +59,30 @@ If you want, help can also be coordinated to find specific GPU cluster resources
 [9](https://www.reddit.com/r/kubernetes/comments/1bkmqoo/simple_explainer_on_how_gpu_allocation_to_k8s/)
 [10](https://assets.ctfassets.net/xjan103pcp94/7Le2RvgnMgydY1RaD81jGM/d9cc4de603ebf46cfb5d34a06ad40e56/Ray_Open_Source-vs-Anyscale_Platform-Comparison.pdf)
 
+## 3.
+Q. Can I run two services one developed on asya and one developed on ray serve on runpod to compare them. And can two users access them at the same time?
+
+You can run two distinct services developed on Asya and Ray Serve on RunPod by deploying each service on separate pods or GPU instances. RunPod supports launching multiple pods concurrently, so each service can run independently in its own environment. This allows you to compare their performance or behavior.
+
+Regarding access by two users simultaneously:
+- If you deploy each service on its own pod and expose the required ports, both users can access the services concurrently via their respective URLs.
+- RunPod also supports concurrency within services (for serverless functions), letting multiple requests be handled at once.
+- For Ray Serve specifically, multi-application deployments are supported by running separate Ray Serve apps with different names and route prefixes, enabling multiple services on the same Ray cluster if desired.
+
+In summary:
+- Deploy the Asya service on one RunPod pod.
+- Deploy the Ray Serve service on another pod (or both on a single pod if sufficient resources and configuration are set).
+- Each service can handle multiple users concurrently as long as the infrastructure and software concurrency settings allow it.
+
+This approach allows you to run and compare both Asya- and Ray-based services on RunPod simultaneously, with concurrent access by multiple users.[1][2][3][4]
+
+[1](https://docs.runpod.io/serverless/development/concurrency)
+[2](https://docs.runpod.io/pods/manage-pods)
+[3](https://docs.anyscale.com/services/multi-app)
+[4](https://github.com/ray-project/ray/issues/31072)
+[5](https://www.runpod.io/product/instant-clusters)
+[6](https://www.runpod.io/articles/guides/ai-on-a-schedule)
+[7](https://www.runpod.io/blog/how-to-run-serverless-ai-and-ml-workloads-on-runpod)
+[8](https://www.reddit.com/r/cloudcomputing/comments/1k9rkdx/runpod_how_to_use_the_same_project_files_and/)
+[9](https://www.runpod.io/blog/deploy-multimodal-models-runpod)
+[10](https://www.runpod.io/blog/instant-clusters-runpod)
