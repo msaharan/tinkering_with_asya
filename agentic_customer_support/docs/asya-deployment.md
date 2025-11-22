@@ -1,6 +1,6 @@
 # Asya Deployment & Validation Runbook
 
-This guide describes how to build, deploy, and validate the Asya implementation on a Kubernetes cluster (e.g. RunPod) that already has the Asya operator and transport configured.
+This guide describes how to build, deploy, and validate the Asya implementation on a Kubernetes cluster that already has the Asya operator and transport configured.
 
 ---
 

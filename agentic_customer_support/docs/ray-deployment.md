@@ -1,6 +1,6 @@
 # Ray Serve Deployment & Validation Runbook
 
-This runbook explains how to package, deploy, and validate the Ray Serve implementation on a Kubernetes cluster (RunPod or similar) with GPU nodes available.
+This runbook explains how to package, deploy, and validate the Ray Serve implementation on a Kubernetes cluster with GPU nodes available.
 
 ---
 
@@ -108,5 +108,5 @@ For more detail, use `ray dashboard` or Ray CLI to inspect replicas and autoscal
 - Compare resource usage vs Asya deployment
 - Feed insights into `docs/asya-docs-page.md` and any public write-ups
 
-This runbook completes the “Build on Ray Serve – Deploy and validate” milestone by providing a reproducible deployment + validation workflow. Execute it on RunPod to gather empirical data for the comparison study.
+This runbook completes the "Build on Ray Serve – Deploy and validate" milestone by providing a reproducible deployment + validation workflow. Execute it on your Kubernetes cluster to gather empirical data for the comparison study.
 
