@@ -96,7 +96,7 @@ This approach allows you to run and compare both Asya- and Ray-based services on
 - Can't use RunPod because it doesn't support kubernetes.
 -   RunPod website: Do you support Kubernetes or other container orchestration tools?
         - Currently, Instant Clusters are not compatible with Kubernetes. The cluster environment is managed by Runpod's native orchestration system, eliminating the need for additional container orchestration tools or CNI configuration.    
-- Next choice: Together.ai
+- Next choice: Together.ai or others
 
 ### Together.ai pricing 
 
@@ -114,6 +114,8 @@ This approach allows you to run and compare both Asya- and Ray-based services on
 | 8x H100 (80GB SXM)  | 3.2 Tb/s Infiniband | 1 node \| 208 CPU cores | Available    | $23.92 / Hour \| $2.99 / Hour per GPU |
 | 16x H100 (80GB SXM) | 3.2 Tb/s Infiniband | 2 nodes \| 416 CPU cores | Available    | $47.84 / Hour \| $2.99 / Hour per GPU |
 
+### AWS EKS
+- Exploring using AWS EKS for the cluster because [Asya repo](https://github.com/deliveryhero/asya/blob/main/docs/install/aws-eks.md) has a guide for it.
 
     
 
