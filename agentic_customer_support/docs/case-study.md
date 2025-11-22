@@ -3,15 +3,17 @@
 > **Comparison**: Asya vs Ray Serve  
 > **Use Case**: Multi-stage AI pipeline for customer support  
 > **Status**: In Progress  
-> **Repository**: [Link to this repo]
+> **Repository**: [`agentic_customer_support`](../README.md)
 
 ## Overview
 
 This case study compares Asya and Ray Serve for building an agentic customer support system that processes customer tickets through a multi-stage pipeline including intent classification, knowledge retrieval, LLM response generation, and validation.
 
+> Part of the [documentation hub](README.md). Update this narrative after each round of testing.
+
 ## Use Case
 
-For the complete use case description including pipeline stages, flow diagram, key requirements, and comparison criteria, see [ADR/ADR_assets/use_case.md](../../ADR/ADR_assets/use_case.md).
+For the complete use case description including pipeline stages, flow diagram, key requirements, and comparison criteria, see [ADR/ADR_assets/use_case.md](../ADR/ADR_assets/use_case.md).
 
 **Summary**: The system processes customer support tickets through a multi-stage pipeline (ingestion → classification → retrieval → generation → validation → formatting → escalation) with requirements for scalability, cost efficiency, near-realtime latency, and reliability.
 
@@ -96,7 +98,7 @@ class IntentClassifierDeployment:
 
 ## Code Repository
 
-Full implementation and comparison available at: [Repository URL]
+Full implementation and comparison available at [`agentic_customer_support`](../README.md).
 
 ## Lessons Learned
 

@@ -31,10 +31,13 @@ agentic_customer_support/
 │   ├── deploy_asya.sh
 │   ├── deploy_ray.sh
 │   └── send_test_ticket.py
-├── docs/              # Documentation
-│   ├── asya-deployment.md
-│   ├── ray-deployment.md
-│   └── asya-docs-page.md
+├── docs/              # Documentation hub and guides
+│   ├── README.md
+│   ├── getting-started.md
+│   ├── runbook-asya.md
+│   ├── runbook-ray.md
+│   ├── comparison.md
+│   └── case-study.md
 ├── examples/          # Test data and examples
 │   ├── test_ticket.json
 │   └── README.md
@@ -43,8 +46,6 @@ agentic_customer_support/
 │   └── ADR_assets/
 │       ├── cluster_selection.md
 │       └── use_case.md
-├── COMPARISON.md      # Comparison framework and findings
-├── GETTING_STARTED.md # Setup and deployment guide
 ├── TODO.md            # Project TODO list
 ├── requirements.txt   # Common dependencies
 └── README.md          # This file
@@ -52,7 +53,7 @@ agentic_customer_support/
 
 ## Quick Start
 
-For detailed setup and deployment instructions, see [GETTING_STARTED.md](GETTING_STARTED.md).
+For detailed setup and deployment instructions, start with the [documentation hub](docs/README.md) or go straight to the [Getting Started guide](docs/getting-started.md).
 
 **Prerequisites:**
 - Kubernetes cluster with GPUs enabled (see [ADR/ADR.md](ADR/ADR.md))
@@ -66,7 +67,7 @@ Both implementations include unit tests, Dockerfiles, and Kubernetes configurati
 
 ## Comparison
 
-See [COMPARISON.md](COMPARISON.md) for detailed comparison of:
+See [Comparison](docs/comparison.md) for detailed breakdown of:
 - Development experience
 - Deployment & operations
 - Performance metrics
@@ -82,8 +83,10 @@ See [TODO.md](TODO.md) for the complete project checklist and progress tracking.
 - [Asya Documentation](https://github.com/deliveryhero/asya)
 - [Ray Serve Documentation](https://docs.ray.io/en/latest/serve/index.html)
 - [Use Case Details](ADR/ADR_assets/use_case.md)
-- [Asya Deployment Runbook](docs/asya-deployment.md)
-- [Ray Serve Deployment Runbook](docs/ray-deployment.md)
+- [Documentation Hub](docs/README.md)
+- [Getting Started Guide](docs/getting-started.md)
+- [Asya Deployment Runbook](docs/runbook-asya.md)
+- [Ray Serve Deployment Runbook](docs/runbook-ray.md)
 
 ## Contributing to Asya Documentation
 

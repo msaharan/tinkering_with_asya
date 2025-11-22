@@ -13,7 +13,7 @@
 - [ ] Execute Asya runbook on Kubernetes cluster and capture validation evidence
 - [ ] Execute Ray runbook on Kubernetes cluster and capture validation evidence
 - [ ] Run performance tests and gather metrics
-- [ ] Evaluate pros and cons - Complete COMPARISON.md
-- [ ] Create documentation page for Asya - Template ready in docs/
+- [ ] Evaluate pros and cons - Complete `docs/comparison.md`
+- [ ] Create documentation page for Asya - Update `docs/case-study.md`
 - [ ] Submit contribution to Asya repository
 

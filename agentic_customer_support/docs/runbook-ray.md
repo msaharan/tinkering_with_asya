@@ -2,6 +2,8 @@
 
 This runbook explains how to package, deploy, and validate the Ray Serve implementation on a Kubernetes cluster with GPU nodes available.
 
+> Part of the [documentation hub](README.md). Pair it with `runbook-asya.md` for parity checks.
+
 ---
 
 ## 1. Prerequisites
@@ -104,9 +106,9 @@ For more detail, use `ray dashboard` or Ray CLI to inspect replicas and autoscal
 
 ## 6. Next Steps
 
-- Capture latency/throughput metrics and update `COMPARISON.md`
+- Capture latency/throughput metrics and update [`comparison.md`](comparison.md)
 - Compare resource usage vs Asya deployment
-- Feed insights into `docs/asya-docs-page.md` and any public write-ups
+- Feed insights into [`case-study.md`](case-study.md) and any public write-ups
 
 This runbook completes the "Build on Ray Serve – Deploy and validate" milestone by providing a reproducible deployment + validation workflow. Execute it on your Kubernetes cluster to gather empirical data for the comparison study.
 

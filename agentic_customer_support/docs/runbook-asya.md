@@ -2,6 +2,8 @@
 
 This guide describes how to build, deploy, and validate the Asya implementation on a Kubernetes cluster that already has the Asya operator and transport configured.
 
+> Part of the [documentation hub](README.md). Pair it with `runbook-ray.md` for side-by-side ops.
+
 ---
 
 ## 1. Prerequisites
@@ -103,8 +105,8 @@ kubectl logs deployment/intent-classifier -n $NAMESPACE
 
 ## 6. Next Steps
 
-- Capture metrics (latency, throughput) and record them in `COMPARISON.md`
-- Update `docs/asya-docs-page.md` with real results
+- Capture metrics (latency, throughput) and record them in [`comparison.md`](comparison.md)
+- Update [`case-study.md`](case-study.md) with real results
 - Export Kubernetes manifests or helm charts if you want reproducible CI/CD deployments
 
 This runbook satisfies the "Build on Asya - Deploy and validate" milestone by providing a reproducible path from source to a working Asya deployment. Actual cluster execution should use these steps and archive logs/metrics for the comparison study.

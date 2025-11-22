@@ -2,6 +2,8 @@
 
 This document tracks the comparison between Ray Serve and Asya implementations of the agentic customer support system.
 
+> Part of the [documentation hub](README.md). Use this as the canonical checklist before updating the case study.
+
 ## Comparison Framework
 
 ### 1. Development Experience

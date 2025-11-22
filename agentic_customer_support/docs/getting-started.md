@@ -2,6 +2,8 @@
 
 This guide will help you set up and run both implementations of the agentic customer support system.
 
+> Part of the [documentation hub](README.md). Refer back there anytime you need the full map.
+
 ## Prerequisites
 
 1. **Kubernetes Cluster**: You'll need a Kubernetes cluster with:
