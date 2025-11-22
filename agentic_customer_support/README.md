@@ -63,5 +63,3 @@ See [TODO.md](TODO.md) for the complete project checklist and progress tracking.
 ## Contributing to Asya Documentation
 
 This project is part of a collaborative effort to create a real-world comparison case study for Asya. The findings from this project will be contributed back to Asya's documentation.
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for details on how findings will be documented and contributed.
