@@ -16,5 +16,4 @@
 - [ ] Evaluate pros and cons - Complete COMPARISON.md
 - [ ] Create documentation page for Asya - Template ready in docs/
 - [ ] Submit contribution to Asya repository
-- [ ] Optional: Medium article or YouTube video
 
