@@ -5,6 +5,8 @@ import argparse
 import json
 import sys
 from pathlib import Path
+from typing import Optional
+
 import httpx
 
 
@@ -23,13 +25,27 @@ def send_to_ray_serve(ticket_data: dict, endpoint: str = "http://localhost:8000/
         sys.exit(1)
 
 
-def send_to_asya(ticket_data: dict, endpoint: str = None):
-    """Send ticket to Asya (via gateway or queue)."""
-    # TODO: Implement Asya gateway/MCP client
-    # For now, this is a placeholder
-    print("Asya integration not yet implemented")
-    print(f"Ticket data: {json.dumps(ticket_data, indent=2)}")
-    return {"status": "not_implemented"}
+def send_to_asya(ticket_data: dict, endpoint: Optional[str] = None):
+    """Send ticket to Asya gateway HTTP endpoint."""
+    if not endpoint:
+        print("Error: --endpoint is required for framework 'asya'", file=sys.stderr)
+        sys.exit(1)
+
+    try:
+        response = httpx.post(
+            endpoint,
+            json=ticket_data,
+            timeout=30.0,
+        )
+        response.raise_for_status()
+        return response.json()
+    except httpx.RequestError as e:
+        print(f"Error connecting to Asya gateway: {e}", file=sys.stderr)
+        sys.exit(1)
+    except httpx.HTTPStatusError as e:
+        print(f"HTTP error from Asya gateway: {e.response.status_code}", file=sys.stderr)
+        print(f"Response: {e.response.text}", file=sys.stderr)
+        sys.exit(1)
 
 
 def main():
@@ -48,7 +64,7 @@ def main():
     )
     parser.add_argument(
         "--endpoint",
-        help="Endpoint URL (default: http://localhost:8000/support for Ray)"
+        help="Endpoint URL (Ray serve HTTP endpoint or Asya gateway URL)",
     )
     
     args = parser.parse_args()
@@ -65,10 +81,10 @@ def main():
     if args.framework == "ray":
         endpoint = args.endpoint or "http://localhost:8000/support"
         result = send_to_ray_serve(ticket_data, endpoint)
-        print(json.dumps(result, indent=2))
-    elif args.framework == "asya":
+    else:
         result = send_to_asya(ticket_data, args.endpoint)
-        print(json.dumps(result, indent=2))
+
+    print(json.dumps(result, indent=2))
 
 
 if __name__ == "__main__":

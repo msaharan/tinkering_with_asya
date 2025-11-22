@@ -6,16 +6,10 @@ from typing import Dict, Any
 from ray import serve
 from ray.serve import Application
 
-import sys
-from pathlib import Path
-
-# Add handlers to path
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
-from handlers.intent_classifier import IntentClassifier
-from handlers.knowledge_retriever import KnowledgeRetriever
-from handlers.response_generator import ResponseGenerator
-from handlers.response_validator import ResponseValidator
+from ray_app.handlers.intent_classifier import IntentClassifier
+from ray_app.handlers.knowledge_retriever import KnowledgeRetriever
+from ray_app.handlers.response_generator import ResponseGenerator
+from ray_app.handlers.response_validator import ResponseValidator
 
 logger = logging.getLogger(__name__)
 

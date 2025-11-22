@@ -17,7 +17,7 @@ The system uses Ray Serve with a deployment graph that orchestrates the pipeline
 ## Structure
 
 ```
-ray/
+ray_app/
 ├── serve/            # Ray Serve deployment code
 ├── handlers/         # Handler classes for each stage
 ├── config/           # Kubernetes deployment configs

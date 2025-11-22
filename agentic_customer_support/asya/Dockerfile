@@ -1,19 +1,21 @@
 # Dockerfile for Asya handlers
-# This is a template - adjust based on your Asya runtime image
+# Installs the Asya runtime and parameterises the handler entrypoint.
 
 FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install dependencies
+# Install Asya runtime and handler dependencies
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir asya-runtime && \
+    pip install --no-cache-dir -r requirements.txt
 
 # Copy handler code
 COPY handlers/ ./handlers/
 
-# Set handler entrypoint (Asya runtime will call this)
-ENV ASYA_HANDLER="handlers.ticket_ingester.process"
+# Allow overriding the handler when building individual images
+ARG HANDLER="handlers.ticket_ingester.process"
+ENV ASYA_HANDLER=${HANDLER}
 ENV PYTHONPATH="/app"
 
 # Asya runtime will execute the handler

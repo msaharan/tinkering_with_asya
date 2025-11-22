@@ -14,7 +14,7 @@ agentic_customer_support/
 │   ├── handlers/      # Python handler functions
 │   ├── config/        # Kubernetes CRDs
 │   └── README.md
-├── ray/               # Ray Serve implementation
+├── ray_app/           # Ray Serve implementation
 │   ├── handlers/      # Handler classes
 │   ├── serve/         # Ray Serve deployment code
 │   ├── config/        # Kubernetes deployments
@@ -57,6 +57,7 @@ See [TODO.md](TODO.md) for the complete project checklist and progress tracking.
 - [Asya Documentation](https://github.com/deliveryhero/asya)
 - [Ray Serve Documentation](https://docs.ray.io/en/latest/serve/index.html)
 - [Use Case Details](ADR/ADR_assets/use_case.md)
+- [Asya Deployment Runbook](docs/asya-deployment.md)
 
 ## Contributing to Asya Documentation
 

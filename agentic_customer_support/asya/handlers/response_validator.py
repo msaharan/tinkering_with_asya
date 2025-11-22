@@ -52,13 +52,13 @@ class ResponseValidator:
         payload['validation_passed'] = score >= self.threshold
         
         if score < self.threshold:
-            logger.warning(f"Response for ticket {ticket_id} scored {score:.2f} < {self.threshold}, routing to refiner")
-            # Dynamically insert refiner actor into route
-            if 'actors' in route:
-                current_idx = route.get('current', 0)
-                # Insert refiner after current position
-                if 'response-refiner' not in route['actors']:
-                    route['actors'].insert(current_idx + 1, 'response-refiner')
+            logger.warning(
+                "Response for ticket %s scored %.2f < %.2f; mark for refinement",
+                ticket_id,
+                score,
+                self.threshold,
+            )
+            payload['needs_refinement'] = True
         else:
             logger.info(f"Response for ticket {ticket_id} passed validation with score {score:.2f}")
         

@@ -1,10 +1,10 @@
 """Unit tests for Ray Serve handlers."""
 
 import pytest
-from handlers.intent_classifier import IntentClassifier
-from handlers.knowledge_retriever import KnowledgeRetriever
-from handlers.response_generator import ResponseGenerator
-from handlers.response_validator import ResponseValidator
+from ray_app.handlers.intent_classifier import IntentClassifier
+from ray_app.handlers.knowledge_retriever import KnowledgeRetriever
+from ray_app.handlers.response_generator import ResponseGenerator
+from ray_app.handlers.response_validator import ResponseValidator
 
 
 def test_intent_classifier():
