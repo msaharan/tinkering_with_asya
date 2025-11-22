@@ -2,7 +2,7 @@
 
 ## Project Scope
 
-- [ ] Find resources (K8s cluster with GPUs)
+- [ ] Find resources (K8s cluster with GPUs) - see [ADR/ADR_assets/cluster_selection.md](ADR/ADR_assets/cluster_selection.md)
 - [x] Choose sample use-case - Agentic customer support
 - [x] Define requirements - See ADR/ADR_assets/use_case.md
 - [x] Implement basic logic - Both implementations complete
