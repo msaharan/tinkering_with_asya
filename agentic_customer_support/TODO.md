@@ -1,6 +1,6 @@
 # TODO
 
-## Project Scope (from conversation with Asya maintainer)
+## Project Scope
 
 - [x] Find resources (K8s cluster with GPUs)
 - [x] Choose sample use-case - Agentic customer support
