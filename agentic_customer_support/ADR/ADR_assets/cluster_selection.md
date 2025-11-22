@@ -87,7 +87,16 @@ This approach allows you to run and compare both Asya- and Ray-based services on
 [9](https://www.runpod.io/blog/deploy-multimodal-models-runpod)
 [10](https://www.runpod.io/blog/instant-clusters-runpod)
 
-## decision
+## Decision
 - RunPod
     - start with RunPod because it's advertised for hackathon projects in [this](https://www.runpod.io/articles/guides/deploying-your-ai-hackathon-project-in-a-weekend-with-runpod) article
     - change later if needed
+
+## Decision
+- Can't use RunPod because it doesn't support kubernetes.
+-   RunPod website: Do you support Kubernetes or other container orchestration tools?
+        - Currently, Instant Clusters are not compatible with Kubernetes. The cluster environment is managed by Runpod's native orchestration system, eliminating the need for additional container orchestration tools or CNI configuration.    
+- Next choice: Together.ai
+    
+
+
