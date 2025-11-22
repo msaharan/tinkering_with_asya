@@ -97,6 +97,24 @@ This approach allows you to run and compare both Asya- and Ray-based services on
 -   RunPod website: Do you support Kubernetes or other container orchestration tools?
         - Currently, Instant Clusters are not compatible with Kubernetes. The cluster environment is managed by Runpod's native orchestration system, eliminating the need for additional container orchestration tools or CNI configuration.    
 - Next choice: Together.ai
+
+### Together.ai pricing 
+
+- **Reserved cluster: Reserve GPU capacity for a duration between 1-90 days. The following costs are for 1 day.
+
+| GPU Type            | Bandwidth           | Details                 | Availability | Price                  |
+| ------------------- | ------------------- | ----------------------- | ------------ | ---------------------- |
+| 8x H100 (80GB SXM)  | 3.2 Tb/s Infiniband | 1 node \| 208 CPU cores | Available    | $480.00 \| $2.50 / Hour |
+| 16x H100 (80GB SXM) | 3.2 Tb/s Infiniband | 2 nodes \| 416 CPU cores | Available    | $960.00 \| $2.50 / Hour |
+
+- On demand cluster: Pay for GPU usage by the hour. 
+
+| GPU Type            | Bandwidth           | Details                 | Availability | Price                                |
+| ------------------- | ------------------- | ----------------------- | ------------ | ------------------------------------ |
+| 8x H100 (80GB SXM)  | 3.2 Tb/s Infiniband | 1 node \| 208 CPU cores | Available    | $23.92 / Hour \| $2.99 / Hour per GPU |
+| 16x H100 (80GB SXM) | 3.2 Tb/s Infiniband | 2 nodes \| 416 CPU cores | Available    | $47.84 / Hour \| $2.99 / Hour per GPU |
+
+
     
 
 
