@@ -33,8 +33,11 @@ cd asya
 pip install -r requirements.txt
 
 # Install Ray Serve dependencies (if testing Ray)
-cd ../ray
+cd ../ray_app
 pip install -r requirements.txt
+
+# Return to repo root for the following steps
+cd ..
 ```
 
 ### 2. Local Testing
@@ -63,13 +66,13 @@ print(result)
 #### Test Ray Serve Locally
 
 ```bash
-cd ray
+cd agentic_customer_support
 
-# Install Ray Serve
+# Install Ray Serve (if not already installed)
 pip install "ray[serve]>=2.9.0"
 
-# Start Ray Serve locally
-ray serve start serve/pipeline.py
+# Start Ray Serve locally (ensure repo root is on PYTHONPATH)
+PYTHONPATH=$(pwd) ray serve run ray_app.serve.pipeline:build_app
 
 # In another terminal, test the endpoint
 curl -X POST http://localhost:8000/support \
@@ -81,7 +84,7 @@ curl -X POST http://localhost:8000/support \
   }'
 
 # Stop Ray Serve
-ray serve shutdown
+ray stop
 ```
 
 ### 3. Build Docker Images
@@ -106,7 +109,7 @@ docker build -t customer-support/intent-classifier:latest \
 #### Ray Serve
 
 ```bash
-cd ray
+cd ray_app
 
 docker build -t customer-support/ray-serve:latest -f Dockerfile .
 ```
@@ -146,7 +149,7 @@ docker build -t customer-support/ray-serve:latest -f Dockerfile .
 
 2. **Deploy Ray Serve**:
    ```bash
-   kubectl apply -f ray/config/example-deployment.yaml
+   kubectl apply -f ray_app/config/example-deployment.yaml
    ```
 
 3. **Verify Deployment**:
