@@ -12,17 +12,42 @@ This project implements a multi-stage agentic customer support pipeline. For det
 agentic_customer_support/
 ├── asya/              # Asya implementation
 │   ├── handlers/      # Python handler functions
-│   ├── config/        # Kubernetes CRDs
+│   ├── config/        # Kubernetes CRDs and namespace
+│   ├── tests/         # Unit tests
+│   ├── Dockerfile     # Container image definition
+│   ├── requirements.txt
 │   └── README.md
 ├── ray_app/           # Ray Serve implementation
 │   ├── handlers/      # Handler classes
 │   ├── serve/         # Ray Serve deployment code
-│   ├── config/        # Kubernetes deployments
+│   ├── config/        # Kubernetes deployments and namespace
+│   ├── tests/         # Unit tests
+│   ├── Dockerfile     # Container image definition
+│   ├── requirements.txt
 │   └── README.md
+├── scripts/           # Deployment and testing scripts
+│   ├── build_asya_images.sh
+│   ├── build_ray_image.sh
+│   ├── deploy_asya.sh
+│   ├── deploy_ray.sh
+│   └── send_test_ticket.py
+├── docs/              # Documentation
+│   ├── asya-deployment.md
+│   ├── ray-deployment.md
+│   └── asya-docs-page.md
 ├── examples/          # Test data and examples
+│   ├── test_ticket.json
+│   └── README.md
+├── ADR/               # Architectural Decision Records
+│   ├── ADR.md
+│   └── ADR_assets/
+│       ├── cluster_selection.md
+│       └── use_case.md
 ├── COMPARISON.md      # Comparison framework and findings
-├── ADR.md             # Architectural Decision Records
-└── TODO.md            # Project TODO list
+├── GETTING_STARTED.md # Setup and deployment guide
+├── TODO.md            # Project TODO list
+├── requirements.txt   # Common dependencies
+└── README.md          # This file
 ```
 
 ## Quick Start
@@ -30,7 +55,7 @@ agentic_customer_support/
 For detailed setup and deployment instructions, see [GETTING_STARTED.md](GETTING_STARTED.md).
 
 **Prerequisites:**
-- Kubernetes cluster with GPUs enabled (see [ADR.md](ADR/ADR.md))
+- Kubernetes cluster with GPUs enabled (see [ADR/ADR.md](ADR/ADR.md))
 - Python 3.10+, Docker, kubectl
 
 **Quick Overview:**
