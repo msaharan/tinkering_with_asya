@@ -58,6 +58,7 @@ See [TODO.md](TODO.md) for the complete project checklist and progress tracking.
 - [Ray Serve Documentation](https://docs.ray.io/en/latest/serve/index.html)
 - [Use Case Details](ADR/ADR_assets/use_case.md)
 - [Asya Deployment Runbook](docs/asya-deployment.md)
+- [Ray Serve Deployment Runbook](docs/ray-deployment.md)
 
 ## Contributing to Asya Documentation
 

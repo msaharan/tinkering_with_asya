@@ -7,10 +7,11 @@
 - [x] Define requirements - See ADR/ADR_assets/use_case.md
 - [x] Implement basic logic - Both implementations complete
 - [x] Build on Asya - Deployment & validation runbook ready
-- [ ] Build on Ray Serve - Deploy and validate
+- [x] Build on Ray Serve - Deployment & validation runbook ready
 - [ ] Deploy on RunPod cluster
 - [ ] Validate cluster configuration
 - [ ] Execute Asya runbook on RunPod cluster and capture validation evidence
+- [ ] Execute Ray runbook on RunPod cluster and capture validation evidence
 - [ ] Run performance tests and gather metrics
 - [ ] Evaluate pros and cons - Complete COMPARISON.md
 - [ ] Create documentation page for Asya - Template ready in docs/
