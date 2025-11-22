@@ -1,3 +1,6 @@
+
+Moved to https://github.com/msaharan/asya/tree/agentic-customer-support-example/examples/agentic_customer_support
+
 # Agentic Customer Support System
 
 A comparative implementation of an agentic customer support system using both [Asya🎭](https://github.com/deliveryhero/asya) and [Ray Serve](https://docs.ray.io/en/latest/serve/index.html).
