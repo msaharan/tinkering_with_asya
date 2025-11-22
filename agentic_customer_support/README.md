@@ -30,7 +30,7 @@ agentic_customer_support/
 For detailed setup and deployment instructions, see [GETTING_STARTED.md](GETTING_STARTED.md).
 
 **Prerequisites:**
-- Kubernetes cluster with GPUs enabled (see [ADR.md](ADR.md))
+- Kubernetes cluster with GPUs enabled (see [ADR.md](ADR/ADR.md))
 - Python 3.10+, Docker, kubectl
 
 **Quick Overview:**
