@@ -115,6 +115,25 @@ Detailed implementation steps
    - Once DecisionRouter works, port the next actor by reusing the same image (add module, rebuild, `kind load ...`, `kubectl rollout restart deployment/<actor>`).  
    - When all actors exist, craft a single envelope with the full pipeline (`["sentiment-analyzer", "intent-analyzer", "context-retriever", "decision-router", "response-generator", "guardrail-validator", "execution-coordinator", "response-aggregator"]`) and verify the flow.
 
+Status / next steps
+
+- Implemented handlers: `DecisionRouter` (envelope mode) and `SentimentAnalyzer` (payload mode). Both live in `tinkering_with_asya/merge_actor_mesh_into_asya/handlers/`.
+- Image + manifest scaffold: `Dockerfile` (minimal slim base) and `decision-router.yaml` (AsyncActor wiring). Update ASYA_HANDLER per actor before applying.
+- Next: rebuild image (`docker build -t actor-mesh-asya:dev -f tinkering_with_asya/merge_actor_mesh_into_asya/Dockerfile .`), load into kind, apply `decision-router.yaml`, and add a similar YAML for `sentiment-analyzer` with `ASYA_HANDLER=handlers.sentiment_analyzer.SentimentAnalyzer.process` (payload mode, omit ASYA_HANDLER_MODE).
+- Optional quick local smoke test (no cluster needed):
+  ```bash
+  python - <<'PY'
+  from handlers.sentiment_analyzer import SentimentAnalyzer
+  sa = SentimentAnalyzer()
+  payload = {
+      "customer_message": "My VIP order is damaged and I need a refund ASAP!",
+      "customer_email": "vip@example.com"
+  }
+  result = sa.process(payload)
+  print(result["sentiment"])
+  PY
+  ```
+
 Key translation hints per actor
 
 - Sentiment/Intent/Context: payload mode, return `{**payload, "sentiment": ..., "intent": ...}`. No manual routing changes; Asya will advance to the next actor.
