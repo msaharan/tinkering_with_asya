@@ -90,9 +90,12 @@ class DecisionRouter:
     def _should_escalate_immediately(
         self, sentiment: Dict[str, Any], intent: Dict[str, Any], context: Dict[str, Any]
     ) -> bool:
-        if sentiment.get("urgency") == "critical":
+        urgency_level = self._get_urgency_level(sentiment)
+        sentiment_label, sentiment_intensity = self._get_sentiment_label_and_intensity(sentiment)
+
+        if urgency_level == "critical":
             return True
-        if sentiment.get("sentiment") == "negative" and sentiment.get("intensity", 0) > 0.8:
+        if sentiment_label == "negative" and sentiment_intensity > 0.8:
             return True
 
         intent_type = intent.get("intent", "")
@@ -100,13 +103,13 @@ class DecisionRouter:
             return True
 
         customer_tier = (context.get("customer") or {}).get("tier", "")
-        if customer_tier == "VIP" and sentiment.get("urgency") in {"high", "critical"}:
+        if customer_tier == "VIP" and urgency_level in {"high", "critical"}:
             return True
 
         return False
 
     def _needs_priority_processing(self, sentiment: Dict[str, Any], intent: Dict[str, Any]) -> bool:
-        if sentiment.get("urgency") == "high":
+        if self._get_urgency_level(sentiment) == "high":
             return True
         intent_type = intent.get("intent", "")
         return intent_type in {"billing_inquiry", "refund_request", "payment_issue"}
@@ -173,6 +176,24 @@ class DecisionRouter:
             return steps.index(step_name)
         except ValueError:
             return None
+
+    def _get_urgency_level(self, sentiment: Dict[str, Any]) -> str:
+        urgency = sentiment.get("urgency")
+        if isinstance(urgency, dict):
+            return str(urgency.get("level", "")).lower()
+        if isinstance(urgency, str):
+            return urgency.lower()
+        return ""
+
+    def _get_sentiment_label_and_intensity(self, sentiment: Dict[str, Any]) -> (str, float):
+        sent = sentiment.get("sentiment")
+        if isinstance(sent, dict):
+            label = str(sent.get("label", "")).lower()
+            intensity = float(sent.get("intensity", sent.get("score", 0.0) or 0.0))
+            return label, intensity
+        if isinstance(sent, str):
+            return sent.lower(), float(sentiment.get("intensity", 0.0))
+        return "", float(sentiment.get("intensity", 0.0))
 
     def _advance_pointer(self, route: Dict[str, Any], current: int) -> None:
         next_index = current + 1

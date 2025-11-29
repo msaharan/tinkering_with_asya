@@ -143,7 +143,7 @@ class SentimentAnalyzer:
 
     # --- Analysis helpers ---
     def _analyze_sentiment(self, text: str) -> Dict[str, Any]:
-        words = re.findall(r"\\b\\w+\\b", text.lower())
+        words = re.findall(r"\b\w+\b", text.lower())
         positive_score = 0.0
         negative_score = 0.0
         found_keywords: List[str] = []
@@ -186,7 +186,7 @@ class SentimentAnalyzer:
         return {"label": label, "confidence": confidence, "score": total_score, "keywords": found_keywords}
 
     def _analyze_urgency(self, text: str) -> Dict[str, Any]:
-        words = re.findall(r"\\b\\w+\\b", text.lower())
+        words = re.findall(r"\b\w+\b", text.lower())
         urgency_score = 0
         found_keywords: List[str] = []
 
@@ -196,14 +196,14 @@ class SentimentAnalyzer:
                 found_keywords.append(word)
 
         urgency_patterns = [
-            r"\\b(today|tonight|this\\s+week)\\b",
-            r"\\b(expires?|expire)\\s+(today|tomorrow|soon)\\b",
-            r"\\b(need|want|require).{0,20}(immediately|asap|urgently)\\b",
-            r"\\b(time\\s+sensitive|time-sensitive)\\b",
-            r"\\b(deadline|due\\s+date)\\b",
-            r"\\b(supposed\\s+to\\s+(arrive|come|be\\s+here))\\s+(yesterday|today)\\b",
-            r"\\b(should\\s+have\\s+(arrived|come|been\\s+here))\\b",
-            r"\\b(was\\s+(supposed|expected))\\s+to\\b",
+            r"\b(today|tonight|this\s+week)\b",
+            r"\b(expires?|expire)\s+(today|tomorrow|soon)\b",
+            r"\b(need|want|require).{0,20}(immediately|asap|urgently)\b",
+            r"\b(time\s+sensitive|time-sensitive)\b",
+            r"\b(deadline|due\s+date)\b",
+            r"\b(supposed\s+to\s+(arrive|come|be\s+here))\s+(yesterday|today)\b",
+            r"\b(should\s+have\s+(arrived|come|been\s+here))\b",
+            r"\b(was\s+(supposed|expected))\s+to\b",
         ]
 
         for pattern in urgency_patterns:
@@ -220,17 +220,17 @@ class SentimentAnalyzer:
         return {"level": level, "score": urgency_score, "keywords": found_keywords}
 
     def _analyze_complaint(self, text: str) -> Dict[str, Any]:
-        words = re.findall(r"\\b\\w+\\b", text.lower())
+        words = re.findall(r"\b\w+\b", text.lower())
         complaint_score = 0
         found_keywords: List[str] = []
 
         complaint_patterns = [
-            r"\\b(i\\s+want\\s+to\\s+complain|file\\s+a\\s+complaint)\\b",
-            r"\\b(this\\s+is\\s+(terrible|awful|horrible))\\b",
-            r"\\b(not\\s+satisfied|unsatisfied|disappointed)\\b",
-            r"\\b(want\\s+(refund|money\\s+back|return))\\b",
-            r"\\b(something\\s+is\\s+wrong|there\\s+is\\s+a\\s+problem)\\b",
-            r"\\b(very\\s+(frustrated|angry|upset))\\b",
+            r"\b(i\s+want\s+to\s+complain|file\s+a\s+complaint)\b",
+            r"\b(this\s+is\s+(terrible|awful|horrible))\b",
+            r"\b(not\s+satisfied|unsatisfied|disappointed)\b",
+            r"\b(want\s+(refund|money\s+back|return))\b",
+            r"\b(something\s+is\s+wrong|there\s+is\s+a\s+problem)\b",
+            r"\b(very\s+(frustrated|angry|upset))\b",
         ]
 
         for pattern in complaint_patterns:
@@ -238,9 +238,9 @@ class SentimentAnalyzer:
                 complaint_score += 3
 
         positive_context_patterns = [
-            r"\\b(thank\\s+you|thanks|grateful|appreciate)\\b",
-            r"\\b(excellent|wonderful|great|amazing|fantastic)\\b",
-            r"\\b(happy|pleased|satisfied|love)\\b",
+            r"\b(thank\s+you|thanks|grateful|appreciate)\b",
+            r"\b(excellent|wonderful|great|amazing|fantastic)\b",
+            r"\b(happy|pleased|satisfied|love)\b",
         ]
 
         has_strong_positive_context = any(re.search(pattern, text, re.IGNORECASE) for pattern in positive_context_patterns)
@@ -256,7 +256,7 @@ class SentimentAnalyzer:
         return {"is_complaint": is_complaint, "score": complaint_score, "keywords": found_keywords}
 
     def _analyze_escalation(self, text: str) -> Dict[str, Any]:
-        words = re.findall(r"\\b\\w+\\b", text.lower())
+        words = re.findall(r"\b\w+\b", text.lower())
         escalation_score = 0
         found_keywords: List[str] = []
 
@@ -266,10 +266,10 @@ class SentimentAnalyzer:
                 found_keywords.append(word)
 
         escalation_patterns = [
-            r"\\b(speak\\s+to\\s+(your\\s+)?(manager|supervisor))\\b",
-            r"\\b(this\\s+is\\s+unacceptable)\\b",
-            r"\\b(i\\s+will\\s+(sue|report|review))\\b",
-            r"\\b(terrible\\s+service|worst\\s+experience)\\b",
+            r"\b(speak\s+to\s+(your\s+)?(manager|supervisor))\b",
+            r"\b(this\s+is\s+unacceptable)\b",
+            r"\b(i\s+will\s+(sue|report|review))\b",
+            r"\b(terrible\s+service|worst\s+experience)\b",
         ]
 
         for pattern in escalation_patterns:
