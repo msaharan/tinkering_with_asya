@@ -132,9 +132,9 @@ Debugging note
         "customer_email": "vip@example.com",
         "sentiment": {"urgency": "high", "sentiment": "negative", "intensity": 0.9},
       "intent": {"intent": "refund_request", "confidence": 0.92},
-      "context": {"customer": {"tier": "VIP"}, "orders": [1, 2, 3]}
-    }
-  }'
+        "context": {"customer": {"tier": "VIP"}, "orders": [1, 2, 3]}
+      }
+    }'
   ```
 - Next actor test (sentiment → decision-router chain):
   - Apply: `kubectl apply -f tinkering_with_asya/merge_actor_mesh_into_asya/sentiment-analyzer.yaml`
@@ -151,10 +151,27 @@ Debugging note
         "payload": {
           "customer_message": "Where is my order, it is one day late?",
           "customer_email": "user@example.com"
-        }
-      }'
+      }
+    }'
     ```
   - Tail logs: `kubectl logs -n asya-e2e -l asya.sh/asya=sentiment-analyzer -c asya-runtime -f` and then `decision-router` to confirm the route continues normally.
+- Escalation path check: send a high-urgency/VIP envelope to confirm DecisionRouter logs “Immediate escalation...”:
+  ```bash
+  aws --region us-east-1 --endpoint-url http://localhost:4566 sqs send-message \
+    --queue-url http://localhost:4566/000000000000/asya-sentiment-analyzer \
+    --message-body '{
+      "id": "demo-escalate",
+      "route": {"actors": ["sentiment-analyzer","decision-router","response-generator","response-aggregator"], "current": 0},
+      "payload": {
+        "customer_message": "I am furious, this is unacceptable. Fix it now!",
+        "customer_email": "vip@example.com",
+        "sentiment": {"urgency": "critical", "sentiment": "negative", "intensity": 0.95},
+        "intent": {"intent": "refund_request", "confidence": 0.4},
+        "context": {"customer": {"tier": "VIP"}, "orders": [1,2,3]}
+      }
+    }'
+  ```
+  Tail `decision-router` logs to see the escalation routing message.
 
 Status / next steps
 
