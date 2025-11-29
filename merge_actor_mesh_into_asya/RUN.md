@@ -1,6 +1,6 @@
 # Running from scratch:
 
-Directory structure: have asya, tinkering_with_asya, actor-mesh-demo dirs in the same parent root dir
+Directory structure: have asya and tinkering_with_asya dirs in the same parent root dir
 
 
 Create the kind stack (sqs-s3 profile):
@@ -59,9 +59,7 @@ kubectl logs -n asya-e2e -l asya.sh/asya=sentiment-analyzer -c asya-runtime -f
 kubectl logs -n asya-e2e -l asya.sh/asya=decision-router -c asya-runtime -f
 ```
 
-When finished, Ctrl+C the port-forward.
-
-Clean up
+### Clean up
 ```
 # stop any port-forward terminals (Ctrl+C there)
 
