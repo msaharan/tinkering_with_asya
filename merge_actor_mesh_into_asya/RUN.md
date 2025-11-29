@@ -75,3 +75,7 @@ kubectl config delete-cluster kind-asya-e2e-sqs-s3 || true
 docker system prune -f
 docker volume prune -f
 ```
+
+### Debugging notes
+- Pod label selector: the operator labels pods with `asya.sh/asya=<actor>` (and `app=<actor>`). Use `kubectl get pods -n asya-e2e -l asya.sh/asya=decision-router` to find the pod; `asya.sh/actor` will return nothing.
+
