@@ -22,74 +22,7 @@ Detailed implementation steps
    - `cd asya`  
    - `PROFILE=sqs-s3 make up-e2e` (cluster name `asya-e2e-sqs-s3`).  
    - Export `KUBECONFIG=$(pwd)/testing/e2e/.kube/config` if kubectl cannot see the cluster.
-2) Scaffold handler package (keep it close to this README for now):  
-   - Create `tinkering_with_asya/merge_actor_mesh_into_asya/handlers/` with an `__init__.py`.  
-   - Copy only business logic, not NATS wiring. Keep dependencies minimal (likely stdlib + whatever the actor truly uses).  
-   - Suggested DecisionRouter translation (envelope mode):
-     ```python
-     class DecisionRouter:
-         def __init__(self, log_level: str = "INFO"):
-             logging.basicConfig(level=log_level)
-             self.logger = logging.getLogger("decision-router")
-
-         def process(self, envelope: dict) -> dict:
-             payload = envelope["payload"]
-             route = envelope["route"]
-
-             sentiment = payload.get("sentiment") or {}
-             intent = payload.get("intent") or {}
-             context = payload.get("context") or {}
-
-             # apply routing decisions (adapt _make_routing_decisions to dicts)
-             # ensure processed actors are preserved
-             if should_escalate(sentiment, intent, context):
-                 route["actors"] = route["actors"][: route["current"] + 1] + ["escalation-router", "response-aggregator"]
-             else:
-                 # insert/append future actors as in original logic
-                 ...
-
-             route["current"] += 1
-             return envelope
-     ```
-     Keep helper functions like `_find_step_index` but operate on `route["actors"]` instead of `message.route.steps`.
-3) Dockerize the handlers:  
-   - Add `tinkering_with_asya/merge_actor_mesh_into_asya/Dockerfile` based on `python:3.12-slim`, copy the `handlers` dir, install requirements (if any), set `ASYA_HANDLER` via env. Example:
-     ```
-     FROM python:3.12-slim
-     WORKDIR /app
-     COPY tinkering_with_asya/merge_actor_mesh_into_asya/handlers ./handlers
-     ENV PYTHONPATH=/app
-     CMD ["python3", "/opt/asya/asya_runtime.py"]
-     ```
-   - Build: `docker build -t actor-mesh-asya:dev -f tinkering_with_asya/merge_actor_mesh_into_asya/Dockerfile .`
-   - Load into kind: `kind load docker-image actor-mesh-asya:dev --name asya-e2e-sqs-s3`.
-4) Define AsyncActor manifests (one per actor). Start with DecisionRouter:  
-   - File `decision-router.yaml`:
-     ```yaml
-     apiVersion: asya.sh/v1alpha1
-     kind: AsyncActor
-     metadata:
-       name: decision-router
-       namespace: asya-e2e
-     spec:
-       transport: sqs
-       scaling: {minReplicas: 1, maxReplicas: 5, queueLength: 1}
-       workload:
-         kind: Deployment
-         template:
-           spec:
-             containers:
-             - name: asya-runtime
-               image: actor-mesh-asya:dev
-               env:
-               - name: ASYA_HANDLER
-                 value: "handlers.decision_router.DecisionRouter.process"
-               - name: ASYA_HANDLER_MODE
-                 value: "envelope"
-     ```
-   - Apply: `kubectl apply -f decision-router.yaml`.
-   - Repeat for other actors with their handler paths; most stay in payload mode.
-5) Wire the route/envelope you send for testing:  
+2) Wire the route/envelope you send for testing:  
    - Envelope shape to post to SQS (LocalStack endpoint from the e2e profile):  
      ```json
      {
@@ -107,11 +40,11 @@ Detailed implementation steps
    - Send:  
      `aws --endpoint-url http://localhost:4566 sqs send-message --queue-url http://localhost:4566/000000000000/asya-decision-router --message-body '...json above...'`
    - Check logs: `kubectl logs -l asya.sh/actor=decision-router -c asya-runtime -n asya-e2e`.
-6) Validate end-to-end:  
+3) Validate end-to-end:  
    - Use `kubectl get asya -n asya-e2e` to confirm CR status.  
    - For multi-actor chains, ensure `route["current"]` increments and queues exist (`kubectl get queues` via operator CRDs or check LocalStack SQS).  
    - Add minimal pytest-style smoke tests that call handlers directly in Python to assert route edits before containerizing.
-7) Iterate:  
+4) Iterate:  
    - Once DecisionRouter works, port the next actor by reusing the same image (add module, rebuild, `kind load ...`, `kubectl rollout restart deployment/<actor>`).  
    - When all actors exist, craft a single envelope with the full pipeline (`["sentiment-analyzer", "intent-analyzer", "context-retriever", "decision-router", "response-generator", "guardrail-validator", "execution-coordinator", "response-aggregator"]`) and verify the flow.
 
@@ -173,24 +106,6 @@ Debugging note
   ```
   Tail `decision-router` logs to see the escalation routing message.
 
-Status / next steps
-
-- Implemented handlers: `DecisionRouter` (envelope mode) and `SentimentAnalyzer` (payload mode). Both live in `tinkering_with_asya/merge_actor_mesh_into_asya/handlers/`.
-- Image + manifest scaffold: `Dockerfile` (minimal slim base) and `decision-router.yaml` (AsyncActor wiring). Update ASYA_HANDLER per actor before applying.
-- Next: rebuild image (`docker build -t actor-mesh-asya:dev -f tinkering_with_asya/merge_actor_mesh_into_asya/Dockerfile .`), load into kind, apply `decision-router.yaml`, and add a similar YAML for `sentiment-analyzer` with `ASYA_HANDLER=handlers.sentiment_analyzer.SentimentAnalyzer.process` (payload mode, omit ASYA_HANDLER_MODE).
-- Optional quick local smoke test (no cluster needed):
-  ```bash
-  python - <<'PY'
-  from handlers.sentiment_analyzer import SentimentAnalyzer
-  sa = SentimentAnalyzer()
-  payload = {
-      "customer_message": "My VIP order is damaged and I need a refund ASAP!",
-      "customer_email": "vip@example.com"
-  }
-  result = sa.process(payload)
-  print(result["sentiment"])
-  PY
-  ```
 
 Key translation hints per actor
 
@@ -198,10 +113,3 @@ Key translation hints per actor
 - ResponseGenerator/GuardrailValidator/ExecutionCoordinator: payload mode; preserve existing fields and append new keys. Raise exceptions for failures to leverage `asya-error-end`.
 - ResponseAggregator: payload mode; can terminate early by returning `None` to skip happy-end or pass through final payload to crew.
 - EscalationRouter: envelope mode; similar to DecisionRouter but likely rewrites the future route to human handoff and adds `payload["recovery_log"]` entries.
-
-Deliverable checkpoints
-
-- Working DecisionRouter handler in Asya envelope mode.  
-- Docker image loaded into kind and AsyncActor deployed.  
-- Sample SQS message routes through and logs show routing decisions.  
-- Playbook above reused to migrate remaining actors one by one.
