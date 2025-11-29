@@ -1,5 +1,7 @@
 # README
 
+Task: merge business logic of [Actor Mesh Demo](https://github.com/msaharan/actor-mesh-demo) into Asya.
+
 -  `make up-e2e` - make kind running locally with sqs-s3-
 -  one by one, migrate actors to Asya, start with DecisionRouter for example:  take [this business logic](https://github.com/msaharan/actor-mesh-demo/blob/8ba1eeb215d3fb21b2a89384f0e0dd78d05be9d8/actors/decision_router.py#L74C9-L112), create a separate dir with asya actors , implement this DecisionRouter as a class receiving envelope (dict) instead of `message: Message`
 - create this class
