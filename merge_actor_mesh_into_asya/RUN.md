@@ -60,3 +60,20 @@ kubectl logs -n asya-e2e -l asya.sh/asya=decision-router -c asya-runtime -f
 ```
 
 When finished, Ctrl+C the port-forward.
+
+Clean up
+```
+# stop any port-forward terminals (Ctrl+C there)
+
+# tear down the kind stack
+cd asya/testing/e2e
+make down PROFILE=sqs-s3
+
+# optional: remove kind context entries
+kubectl config delete-context kind-asya-e2e-sqs-s3 || true
+kubectl config delete-cluster kind-asya-e2e-sqs-s3 || true
+
+# optional: prune local docker artifacts
+docker system prune -f
+docker volume prune -f
+```
