@@ -1,0 +1,15 @@
+2025-11-29 16:53:43 - asya.runtime - INFO - Asya Actor Runtime starting with handler: handlers.decision_router.DecisionRouter.process (mode: envelope, validation: True)
+2025-11-29 16:53:43 - asya.runtime - INFO - Loading class handler: module=handlers.decision_router class=DecisionRouter method=process
+2025-11-29 16:53:43 - asya.runtime - INFO - Instantiated class handler: DecisionRouter
+2025-11-29 16:53:43 - asya.runtime - INFO - Socket permissions set to 0o666
+2025-11-29 16:53:43 - asya.runtime - INFO - Socket server listening on /var/run/asya/asya-runtime.sock
+2025-11-29 16:53:43 - asya.runtime - INFO - Runtime ready signal created: /var/run/asya/runtime-ready
+2025-11-29 16:53:43 - asya.runtime - WARNING - Client disconnected
+2025-11-29 16:56:26 - asya.runtime - INFO - [DIAG] Starting handler execution, mode=envelope, envelope_id=demo-2
+2025-11-29 16:56:26 - asya.runtime - INFO - [DIAG] Handler completed successfully: returning 1 response(s)
+2025-11-29 17:05:00 - asya.runtime - INFO - [DIAG] Starting handler execution, mode=envelope, envelope_id=demo-2
+2025-11-29 17:05:00 - asya.runtime - INFO - [DIAG] Handler completed successfully: returning 1 response(s)
+2025-11-29 17:13:34 - asya.runtime - INFO - [DIAG] Starting handler execution, mode=envelope, envelope_id=demo-escalate-direct
+2025-11-29 17:13:34,497 INFO asya.decision-router Immediate escalation triggered; rerouting to escalation flow.
+2025-11-29 17:13:34 - asya.decision-router - INFO - Immediate escalation triggered; rerouting to escalation flow.
+2025-11-29 17:13:34 - asya.runtime - INFO - [DIAG] Handler completed successfully: returning 1 response(s)
