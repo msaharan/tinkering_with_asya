@@ -115,6 +115,10 @@ Detailed implementation steps
    - Once DecisionRouter works, port the next actor by reusing the same image (add module, rebuild, `kind load ...`, `kubectl rollout restart deployment/<actor>`).  
    - When all actors exist, craft a single envelope with the full pipeline (`["sentiment-analyzer", "intent-analyzer", "context-retriever", "decision-router", "response-generator", "guardrail-validator", "execution-coordinator", "response-aggregator"]`) and verify the flow.
 
+Debugging note
+
+- Pod label selector: the operator labels pods with `asya.sh/asya=<actor>` (and `app=<actor>`). Use `kubectl get pods -n asya-e2e -l asya.sh/asya=decision-router` to find the pod; `asya.sh/actor` will return nothing.
+
 Status / next steps
 
 - Implemented handlers: `DecisionRouter` (envelope mode) and `SentimentAnalyzer` (payload mode). Both live in `tinkering_with_asya/merge_actor_mesh_into_asya/handlers/`.
