@@ -118,6 +118,24 @@ Detailed implementation steps
 Debugging note
 
 - Pod label selector: the operator labels pods with `asya.sh/asya=<actor>` (and `app=<actor>`). Use `kubectl get pods -n asya-e2e -l asya.sh/asya=decision-router` to find the pod; `asya.sh/actor` will return nothing.
+- LocalStack CLI reminder: set dummy AWS creds and region when using `aws` against LocalStack, then send the test envelope:
+  ```bash
+  export AWS_ACCESS_KEY_ID=test
+  export AWS_SECRET_ACCESS_KEY=test
+  aws --region us-east-1 --endpoint-url http://localhost:4566 sqs send-message \
+    --queue-url http://localhost:4566/000000000000/asya-decision-router \
+    --message-body '{
+      "id": "demo-1",
+      "route": {"actors": ["decision-router","response-generator","response-aggregator"], "current": 0},
+      "payload": {
+        "customer_message": "My VIP order is damaged and I need a refund ASAP!",
+        "customer_email": "vip@example.com",
+        "sentiment": {"urgency": "high", "sentiment": "negative", "intensity": 0.9},
+        "intent": {"intent": "refund_request", "confidence": 0.92},
+        "context": {"customer": {"tier": "VIP"}, "orders": [1, 2, 3]}
+      }
+    }'
+  ```
 
 Status / next steps
 
