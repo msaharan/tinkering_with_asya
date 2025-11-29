@@ -1,7 +1,6 @@
 # Running from scratch:
 
-Directory structure: have asya and tinkering_with_asya dirs in the same parent root dir
-
+Directory structure: have `asya` and `tinkering_with_asya` dirs in the same parent root dir.
 
 Create the kind stack (sqs-s3 profile):
 
