@@ -31,7 +31,6 @@ class DecisionRouter:
         context = payload.get("context") or {}
 
         self._make_routing_decisions(route, current, sentiment, intent, context)
-
         return envelope
 
     def _make_routing_decisions(
@@ -48,23 +47,23 @@ class DecisionRouter:
             changes["immediate_escalation"] = True
             self._override_future(route, current, [self.ESCALATION_ROUTER, self.RESPONSE_AGGREGATOR])
             logging.info("Immediate escalation triggered; rerouting to escalation flow.")
+            return changes
 
-        else:
-            if self._needs_priority_processing(sentiment, intent):
-                changes["priority_processing"] = True
-                self._insert_priority_steps(route, current)
+        if self._needs_priority_processing(sentiment, intent):
+            changes["priority_processing"] = True
+            self._insert_priority_steps(route, current)
 
-            if self._needs_action_execution(intent, context):
-                changes["action_execution"] = True
-                self._ensure_execution_coordinator(route, current)
+        if self._needs_action_execution(intent, context):
+            changes["action_execution"] = True
+            self._ensure_execution_coordinator(route, current)
 
-            if self._has_low_confidence(intent):
-                changes["low_confidence"] = True
-                self._add_human_review(route, current)
+        if self._has_low_confidence(intent):
+            changes["low_confidence"] = True
+            self._add_human_review(route, current)
 
-            if self._is_complex_query(intent, context):
-                changes["complex_processing"] = True
-                self._add_enhanced_processing(route, current)
+        if self._is_complex_query(intent, context):
+            changes["complex_processing"] = True
+            self._add_enhanced_processing(route, current)
 
         if changes:
             logging.info("Applied routing changes: %s", changes)
