@@ -43,11 +43,9 @@ Deploy all actors:
 for file in deploy/manifests/*.yaml; do
     ACTOR_NAME=$(basename "$file" .yaml)
     echo "Deploying Actor: $ACTOR_NAME"
-
     kubectl -n "${NAMESPACE}" apply -f "$file"
     kubectl -n "${NAMESPACE}" get asya "$ACTOR_NAME"
     kubectl -n "${NAMESPACE}" wait --for=condition=available --timeout=120s "deployment/$ACTOR_NAME"
-    echo "---------------------------------"
 done
 ```
 
