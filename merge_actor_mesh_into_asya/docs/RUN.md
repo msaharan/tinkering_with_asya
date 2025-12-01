@@ -30,14 +30,26 @@ docker build -t actor-mesh-asya:dev ./src
 kind load docker-image actor-mesh-asya:dev --name ${CLUSTER_NAME}
 ```
 
-Deploy actors:
+Deploy single actor:
 ```sh
 ACTOR_NAME="decision-router"
-
 kubectl -n ${NAMESPACE} apply -f deploy/manifests/${ACTOR_NAME}.yaml
 kubectl -n ${NAMESPACE} get asya ${ACTOR_NAME}
 ```
 (wait for 2/2 Ready)
+
+Deploy all actors:
+```sh
+for file in deploy/manifests/*.yaml; do
+    ACTOR_NAME=$(basename "$file" .yaml)
+    echo "Deploying Actor: $ACTOR_NAME"
+
+    kubectl -n "${NAMESPACE}" apply -f "$file"
+    kubectl -n "${NAMESPACE}" get asya "$ACTOR_NAME"
+    kubectl -n "${NAMESPACE}" wait --for=condition=available --timeout=120s "deployment/$ACTOR_NAME"
+    echo "---------------------------------"
+done
+```
 
 For debugging, check operator logs:
 ```sh
