@@ -26,7 +26,7 @@ cd <current-repo>/merge_actor_mesh_into_asya
 
 Rebuild handlers image and load into Kind (need to rebuild after each kind cluster recreation or each handler code change):
 ```sh
-docker build -t actor-mesh-asya:dev ./src
+docker build -t actor-mesh-asya:dev .
 kind load docker-image actor-mesh-asya:dev --name ${CLUSTER_NAME}
 ```
 

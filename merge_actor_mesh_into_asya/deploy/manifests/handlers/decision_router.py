@@ -10,6 +10,8 @@ Translates the actor-mesh decision routing logic to envelope mode handlers:
 import logging
 from typing import Any, Dict, List, Optional
 
+logging.basicConfig(level=logging.INFO)
+
 
 class DecisionRouter:
     # Actor names are DNS-safe for Kubernetes and queue naming
@@ -19,21 +21,12 @@ class DecisionRouter:
     EXECUTION_COORDINATOR = "execution-coordinator"
     CONTEXT_RETRIEVER = "context-retriever"
 
-    def __init__(self, log_level: str = "INFO") -> None:
-        self.logger = logging.getLogger("asya.decision-router")
-        if not self.logger.handlers:
-            handler = logging.StreamHandler()
-            handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(name)s %(message)s"))
-            self.logger.addHandler(handler)
-        self.logger.setLevel(log_level.upper())
-
     def process(self, envelope: Dict[str, Any]) -> Dict[str, Any]:
         payload = envelope.get("payload") or {}
         route = envelope.get("route") or {}
         actors = list(route.get("actors") or [])
         current = int(route.get("current", 0))
 
-        self._validate_route(actors, current)
         route["actors"] = actors
 
         sentiment = payload.get("sentiment") or {}
@@ -41,14 +34,7 @@ class DecisionRouter:
         context = payload.get("context") or {}
 
         self._make_routing_decisions(route, current, sentiment, intent, context)
-        self._advance_pointer(route, current)
         return envelope
-
-    def _validate_route(self, actors: List[str], current: int) -> None:
-        if not actors:
-            raise RuntimeError("DecisionRouter requires a non-empty route.actors list.")
-        if current < 0 or current >= len(actors):
-            raise RuntimeError(f"route.current {current} is out of bounds for actors list of length {len(actors)}.")
 
     def _make_routing_decisions(
         self,
@@ -63,7 +49,7 @@ class DecisionRouter:
         if self._should_escalate_immediately(sentiment, intent, context):
             changes["immediate_escalation"] = True
             self._override_future(route, current, [self.ESCALATION_ROUTER, self.RESPONSE_AGGREGATOR])
-            self.logger.info("Immediate escalation triggered; rerouting to escalation flow.")
+            logging.info("Immediate escalation triggered; rerouting to escalation flow.")
             return changes
 
         if self._needs_priority_processing(sentiment, intent):
@@ -83,7 +69,7 @@ class DecisionRouter:
             self._add_enhanced_processing(route, current)
 
         if changes:
-            self.logger.debug("Applied routing changes: %s", changes)
+            logging.debug("Applied routing changes: %s", changes)
 
         return changes
 
@@ -194,10 +180,3 @@ class DecisionRouter:
         if isinstance(sent, str):
             return sent.lower(), float(sentiment.get("intensity", 0.0))
         return "", float(sentiment.get("intensity", 0.0))
-
-    def _advance_pointer(self, route: Dict[str, Any], current: int) -> None:
-        next_index = current + 1
-        if next_index >= len(route["actors"]):
-            route["current"] = len(route["actors"]) - 1
-        else:
-            route["current"] = next_index
