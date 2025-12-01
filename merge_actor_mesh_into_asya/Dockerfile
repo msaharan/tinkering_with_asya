@@ -1,6 +1,4 @@
 # Minimal image for the migrated Actor Mesh handlers.
-# Asya operator mounts /opt/asya/asya_runtime.py and sets ASYA_HANDLER.
-
 FROM python:3.12-slim
 
 WORKDIR /app
@@ -10,5 +8,4 @@ WORKDIR /app
 # RUN pip install --no-cache-dir -r requirements.txt
 
 COPY ./handlers ./handlers
-
 ENV PYTHONPATH=/app

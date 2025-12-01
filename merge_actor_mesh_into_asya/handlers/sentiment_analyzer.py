@@ -11,15 +11,10 @@ import re
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Set
 
+logging.basicConfig(level=logging.INFO)
 
 class SentimentAnalyzer:
     def __init__(self, log_level: str = "INFO") -> None:
-        self.logger = logging.getLogger("asya.sentiment-analyzer")
-        if not self.logger.handlers:
-            handler = logging.StreamHandler()
-            handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(name)s %(message)s"))
-            self.logger.addHandler(handler)
-        self.logger.setLevel(log_level.upper())
 
         # Lexicons
         self.positive_words: Set[str] = {
@@ -90,7 +85,7 @@ class SentimentAnalyzer:
         """Analyze sentiment/urgency and return the enriched payload."""
         try:
             customer_email = payload.get("customer_email", "unknown")
-            self.logger.info("Processing sentiment for %s", customer_email)
+            logging.info("Processing sentiment for %s", customer_email)
 
             content = str(payload.get("customer_message") or "").lower()
 
@@ -119,7 +114,7 @@ class SentimentAnalyzer:
                 },
             }
 
-            self.logger.info(
+            logging.info(
                 "Sentiment completed: %s (confidence %.2f, urgency %s)",
                 sentiment_result.get("label", "neutral"),
                 float(sentiment_result.get("confidence", 0.0)),
@@ -130,7 +125,7 @@ class SentimentAnalyzer:
             return {**payload, "sentiment": analysis_result}
 
         except Exception as exc:  # pragma: no cover - safety net
-            self.logger.error("Sentiment analysis error: %s", exc)
+            logging.error("Sentiment analysis error: %s", exc)
             fallback = {
                 "sentiment": {"label": "neutral", "confidence": 0.0},
                 "urgency": {"level": "low", "score": 0.0},

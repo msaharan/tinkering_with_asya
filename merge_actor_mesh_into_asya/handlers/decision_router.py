@@ -22,18 +22,16 @@ class DecisionRouter:
     CONTEXT_RETRIEVER = "context-retriever"
 
     def process(self, envelope: Dict[str, Any]) -> Dict[str, Any]:
-        payload = envelope.get("payload") or {}
-        route = envelope.get("route") or {}
-        actors = list(route.get("actors") or [])
-        current = int(route.get("current", 0))
-
-        route["actors"] = actors
+        payload = envelope["payload"]
+        route = envelope["route"]
+        current = route["current"]
 
         sentiment = payload.get("sentiment") or {}
         intent = payload.get("intent") or {}
         context = payload.get("context") or {}
 
         self._make_routing_decisions(route, current, sentiment, intent, context)
+
         return envelope
 
     def _make_routing_decisions(
@@ -50,28 +48,27 @@ class DecisionRouter:
             changes["immediate_escalation"] = True
             self._override_future(route, current, [self.ESCALATION_ROUTER, self.RESPONSE_AGGREGATOR])
             logging.info("Immediate escalation triggered; rerouting to escalation flow.")
-            return changes
 
-        if self._needs_priority_processing(sentiment, intent):
-            changes["priority_processing"] = True
-            self._insert_priority_steps(route, current)
+        else:
+            if self._needs_priority_processing(sentiment, intent):
+                changes["priority_processing"] = True
+                self._insert_priority_steps(route, current)
 
-        if self._needs_action_execution(intent, context):
-            changes["action_execution"] = True
-            self._ensure_execution_coordinator(route, current)
+            if self._needs_action_execution(intent, context):
+                changes["action_execution"] = True
+                self._ensure_execution_coordinator(route, current)
 
-        if self._has_low_confidence(intent):
-            changes["low_confidence"] = True
-            self._add_human_review(route, current)
+            if self._has_low_confidence(intent):
+                changes["low_confidence"] = True
+                self._add_human_review(route, current)
 
-        if self._is_complex_query(intent, context):
-            changes["complex_processing"] = True
-            self._add_enhanced_processing(route, current)
+            if self._is_complex_query(intent, context):
+                changes["complex_processing"] = True
+                self._add_enhanced_processing(route, current)
 
         if changes:
-            logging.debug("Applied routing changes: %s", changes)
+            logging.info("Applied routing changes: %s", changes)
 
-        return changes
 
     def _should_escalate_immediately(
         self, sentiment: Dict[str, Any], intent: Dict[str, Any], context: Dict[str, Any]
