@@ -2,7 +2,6 @@ apiVersion: asya.sh/v1alpha1
 kind: AsyncActor
 metadata:
   name: sentiment-analyzer
-  namespace: asya-e2e
 spec:
   transport: sqs
   scaling:
