@@ -21,6 +21,10 @@ class DecisionRouter:
     EXECUTION_COORDINATOR = "execution-coordinator"
     CONTEXT_RETRIEVER = "context-retriever"
 
+    def __init__(self) -> None:
+        # Explicit no-arg init so the Asya runtime can instantiate the class handler
+        pass
+
     def process(self, envelope: Dict[str, Any]) -> Dict[str, Any]:
         payload = envelope["payload"]
         route = envelope["route"]
