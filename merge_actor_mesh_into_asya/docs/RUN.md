@@ -4,44 +4,88 @@ Directory structure: have `asya` and `tinkering_with_asya` dirs in the same pare
 
 Create the kind stack (sqs-s3 profile):
 
-```
+```sh
+git clone https://github.com/deliveryhero/asya.git
 cd asya/testing/e2e
 make up PROFILE=sqs-s3
-kubectl config use-context kind-asya-e2e-sqs-s3
+
+# configure cluster/context names same as in asya repo:
+export CLUSTER_NAME="asya-e2e-sqs-s3"
+kubectl config use-context "kind-${CLUSTER_NAME}"
+
+# create custom namespace:
+NAMESPACE="example-ecom"
+kubectl create namespace ${NAMESPACE}
+
+# Create SQS creds secret in your actor namespace (needed for SQS queue creation)
+kubectl -n ${NAMESPACE} create secret generic sqs-secret \
+  --from-literal=access-key-id=test \
+  --from-literal=secret-access-key=test
 ```
 
-Rebuild/load your handlers image:
+Step into the ecommerce example root:
+
+```sh
+cd <current-repo>/merge_actor_mesh_into_asya
 ```
-cd ../../..
-docker build -t actor-mesh-asya:dev -f tinkering_with_asya/merge_actor_mesh_into_asya/Dockerfile .
-kind load docker-image actor-mesh-asya:dev --name asya-e2e-sqs-s3
+
+Rebuild handlers image and load into Kind (need to rebuild after each kind cluster recreation or each handler code change):
+```sh
+# Build with --no-cache to ensure fresh build during development
+docker build --no-cache -t actor-mesh-asya:dev .
+
+# Load into Kind cluster
+kind load docker-image actor-mesh-asya:dev --name ${CLUSTER_NAME}
+
+# Delete existing actor pods to force them to use the new image
+# (imagePullPolicy: IfNotPresent won't reload images with same tag)
+kubectl -n ${NAMESPACE} delete pods -l app=example-ecom || true
 ```
-Deploy actors:
-```
-kubectl apply -f tinkering_with_asya/merge_actor_mesh_into_asya/decision-router.yaml
-kubectl apply -f tinkering_with_asya/merge_actor_mesh_into_asya/sentiment-analyzer.yaml
-kubectl get pods -n asya-e2e -l asya.sh/asya=decision-router
-kubectl get pods -n asya-e2e -l asya.sh/asya=sentiment-analyzer
+
+Deploy single actor:
+```sh
+ACTOR_NAME="decision-router"
+# Ensure sqs-secret exists in the same namespace before applying; otherwise the Deployment won't be created
+kubectl -n ${NAMESPACE} apply -f deploy/manifests/${ACTOR_NAME}.yaml
+kubectl -n ${NAMESPACE} get asya ${ACTOR_NAME}
+kubectl -n ${NAMESPACE} wait --for=condition=available --timeout=120s "deployment/$ACTOR_NAME"
 ```
 (wait for 2/2 Ready)
 
-
-Keep SQS reachable (new terminal):
+Deploy all actors:
+```sh
+for file in deploy/manifests/*.yaml; do
+    ACTOR_NAME=$(basename "$file" .yaml)
+    echo "Deploying Actor: $ACTOR_NAME"
+    kubectl -n ${NAMESPACE} apply -f "$file"
+    kubectl -n ${NAMESPACE} get asya "$ACTOR_NAME"
+    kubectl -n ${NAMESPACE} wait --for=condition=available --timeout=120s "deployment/$ACTOR_NAME"
+done
 ```
-kubectl port-forward -n asya-e2e svc/localstack-sqs 4566:4566
+
+For debugging, check operator logs:
+```sh
+kubectl -n asya-system logs -l app.kubernetes.io/instance=asya-operator -f
+```
+
+Port-forward SQS ports to localhost for testing (in a separate terminal, LocalStack runs in `asya-e2e`):
+```sh
+kubectl -n asya-e2e port-forward svc/localstack-sqs 4566:4566
 ```
 
 Set dummy AWS creds/region (shell where you send messages):
-```
+```sh
 export AWS_ACCESS_KEY_ID=test
 export AWS_SECRET_ACCESS_KEY=test
 export AWS_REGION=us-east-1
 ```
 
 Send a test envelope through the chain:
-```
-aws --region us-east-1 --endpoint-url http://localhost:4566 sqs send-message \
-  --queue-url http://localhost:4566/000000000000/asya-sentiment-analyzer \
+```sh
+KIND_SQS_BASE_URL="http://localhost:4566/000000000000"
+
+aws --endpoint-url http://localhost:4566 sqs send-message \
+  --queue-url "${KIND_SQS_BASE_URL}/asya-sentiment-analyzer" \
   --message-body '{
     "id": "demo-2",
     "route": {"actors": ["sentiment-analyzer","decision-router","response-generator","response-aggregator"], "current": 0},
@@ -53,9 +97,9 @@ aws --region us-east-1 --endpoint-url http://localhost:4566 sqs send-message \
 ```
 
 Watch logs:
-```
-kubectl logs -n asya-e2e -l asya.sh/asya=sentiment-analyzer -c asya-runtime -f
-kubectl logs -n asya-e2e -l asya.sh/asya=decision-router -c asya-runtime -f
+```sh
+kubectl logs -n ${NAMESPACE} -l asya.sh/asya=sentiment-analyzer -c asya-runtime -f
+kubectl logs -n ${NAMESPACE} -l asya.sh/asya=decision-router -c asya-runtime -f
 ```
 
 ### Clean up
@@ -66,15 +110,10 @@ kubectl logs -n asya-e2e -l asya.sh/asya=decision-router -c asya-runtime -f
 cd asya/testing/e2e
 make down PROFILE=sqs-s3
 
-# optional: remove kind context entries
-kubectl config delete-context kind-asya-e2e-sqs-s3 || true
-kubectl config delete-cluster kind-asya-e2e-sqs-s3 || true
-
 # optional: prune local docker artifacts
 docker system prune -f
 docker volume prune -f
 ```
 
 ### Debugging notes
-- Pod label selector: the operator labels pods with `asya.sh/asya=<actor>` (and `app=<actor>`). Use `kubectl get pods -n asya-e2e -l asya.sh/asya=decision-router` to find the pod; `asya.sh/actor` will return nothing.
-
+- Pod label selector: the operator labels created pods with `asya.sh/asya=<actor>` (and `app=<actor>`). Use `kubectl get pods -n ${NAMESPACE} -l asya.sh/asya=decision-router` to find the pod; `asya.sh/actor` will return nothing.
