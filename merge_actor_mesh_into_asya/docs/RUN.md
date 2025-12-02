@@ -14,7 +14,7 @@ export CLUSTER_NAME="asya-e2e-sqs-s3"
 kubectl config use-context "kind-${CLUSTER_NAME}"
 
 # create custom namespace:
-NAMESPACE="asya-e2e"
+NAMESPACE="example-ecom"
 kubectl create namespace ${NAMESPACE}
 ```
 
@@ -26,8 +26,15 @@ cd <current-repo>/merge_actor_mesh_into_asya
 
 Rebuild handlers image and load into Kind (need to rebuild after each kind cluster recreation or each handler code change):
 ```sh
-docker build -t actor-mesh-asya:dev .
+# Build with --no-cache to ensure fresh build during development
+docker build --no-cache -t actor-mesh-asya:dev .
+
+# Load into Kind cluster
 kind load docker-image actor-mesh-asya:dev --name ${CLUSTER_NAME}
+
+# Delete existing actor pods to force them to use the new image
+# (imagePullPolicy: IfNotPresent won't reload images with same tag)
+kubectl -n ${NAMESPACE} delete pods -l app=example-ecom || true
 ```
 
 Deploy single actor:
@@ -35,6 +42,7 @@ Deploy single actor:
 ACTOR_NAME="decision-router"
 kubectl -n ${NAMESPACE} apply -f deploy/manifests/${ACTOR_NAME}.yaml
 kubectl -n ${NAMESPACE} get asya ${ACTOR_NAME}
+kubectl -n ${NAMESPACE} wait --for=condition=available --timeout=120s "deployment/$ACTOR_NAME"
 ```
 (wait for 2/2 Ready)
 
@@ -43,9 +51,9 @@ Deploy all actors:
 for file in deploy/manifests/*.yaml; do
     ACTOR_NAME=$(basename "$file" .yaml)
     echo "Deploying Actor: $ACTOR_NAME"
-    kubectl -n "${NAMESPACE}" apply -f "$file"
-    kubectl -n "${NAMESPACE}" get asya "$ACTOR_NAME"
-    kubectl -n "${NAMESPACE}" wait --for=condition=available --timeout=120s "deployment/$ACTOR_NAME"
+    kubectl -n ${NAMESPACE} apply -f "$file"
+    kubectl -n ${NAMESPACE} get asya "$ACTOR_NAME"
+    kubectl -n ${NAMESPACE} wait --for=condition=available --timeout=120s "deployment/$ACTOR_NAME"
 done
 ```
 

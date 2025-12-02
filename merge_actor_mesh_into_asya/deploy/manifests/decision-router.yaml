@@ -2,6 +2,8 @@ apiVersion: asya.sh/v1alpha1
 kind: AsyncActor
 metadata:
   name: decision-router
+  labels:
+    app: example-ecom
 spec:
   transport: sqs
   scaling:
