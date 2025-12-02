@@ -16,6 +16,11 @@ kubectl config use-context "kind-${CLUSTER_NAME}"
 # create custom namespace:
 NAMESPACE="example-ecom"
 kubectl create namespace ${NAMESPACE}
+
+# Create SQS creds secret in your actor namespace (needed for SQS queue creation)
+kubectl -n ${NAMESPACE} create secret generic sqs-secret \
+  --from-literal=access-key-id=test \
+  --from-literal=secret-access-key=test
 ```
 
 Step into the ecommerce example root:
@@ -40,6 +45,7 @@ kubectl -n ${NAMESPACE} delete pods -l app=example-ecom || true
 Deploy single actor:
 ```sh
 ACTOR_NAME="decision-router"
+# Ensure sqs-secret exists in the same namespace before applying; otherwise the Deployment won't be created
 kubectl -n ${NAMESPACE} apply -f deploy/manifests/${ACTOR_NAME}.yaml
 kubectl -n ${NAMESPACE} get asya ${ACTOR_NAME}
 kubectl -n ${NAMESPACE} wait --for=condition=available --timeout=120s "deployment/$ACTOR_NAME"
@@ -62,9 +68,9 @@ For debugging, check operator logs:
 kubectl -n asya-system logs -l app.kubernetes.io/instance=asya-operator -f
 ```
 
-Port-forward SQS ports to localhost for testing (in a separate terminal):
+Port-forward SQS ports to localhost for testing (in a separate terminal, LocalStack runs in `asya-e2e`):
 ```sh
-kubectl -n ${NAMESPACE} port-forward svc/localstack-sqs 4566:4566
+kubectl -n asya-e2e port-forward svc/localstack-sqs 4566:4566
 ```
 
 Set dummy AWS creds/region (shell where you send messages):
@@ -92,8 +98,8 @@ aws --endpoint-url http://localhost:4566 sqs send-message \
 
 Watch logs:
 ```sh
-kubectl logs -n asya-e2e -l asya.sh/asya=sentiment-analyzer -c asya-runtime -f
-kubectl logs -n asya-e2e -l asya.sh/asya=decision-router -c asya-runtime -f
+kubectl logs -n ${NAMESPACE} -l asya.sh/asya=sentiment-analyzer -c asya-runtime -f
+kubectl logs -n ${NAMESPACE} -l asya.sh/asya=decision-router -c asya-runtime -f
 ```
 
 ### Clean up
@@ -110,5 +116,4 @@ docker volume prune -f
 ```
 
 ### Debugging notes
-- Pod label selector: the operator labels created pods with `asya.sh/asya=<actor>` (and `app=<actor>`). Use `kubectl get pods -n asya-e2e -l asya.sh/asya=decision-router` to find the pod; `asya.sh/actor` will return nothing.
-
+- Pod label selector: the operator labels created pods with `asya.sh/asya=<actor>` (and `app=<actor>`). Use `kubectl get pods -n ${NAMESPACE} -l asya.sh/asya=decision-router` to find the pod; `asya.sh/actor` will return nothing.
