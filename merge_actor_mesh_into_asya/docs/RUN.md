@@ -29,7 +29,7 @@ Step into the ecommerce example root:
 cd <current-repo>/merge_actor_mesh_into_asya
 ```
 
-Rebuild handlers image and load into Kind (need to rebuild after each kind cluster recreation or each handler code change):
+Rebuild handlers image and load into Kind (rebuild after each code change):
 ```sh
 # Build with --no-cache to ensure fresh build during development
 docker build --no-cache -t actor-mesh-asya:dev .
@@ -80,17 +80,17 @@ export AWS_SECRET_ACCESS_KEY=test
 export AWS_REGION=us-east-1
 ```
 
-Send a test envelope through the chain:
+Send a test envelope through the full chain (sentiment → intent → context → router → response → guardrail → execution → aggregator):
 ```sh
 KIND_SQS_BASE_URL="http://localhost:4566/000000000000"
 
 aws --endpoint-url http://localhost:4566 sqs send-message \
   --queue-url "${KIND_SQS_BASE_URL}/asya-sentiment-analyzer" \
   --message-body '{
-    "id": "demo-2",
-    "route": {"actors": ["sentiment-analyzer","decision-router","response-generator","response-aggregator"], "current": 0},
+    "id": "demo-7",
+    "route": {"actors": ["sentiment-analyzer","intent-analyzer","context-retriever","decision-router","response-generator","guardrail-validator","execution-coordinator","response-aggregator"], "current": 0},
     "payload": {
-      "customer_message": "Where is my order, it is one day late?",
+      "customer_message": "Where is my order 12345? It is one day late.",
       "customer_email": "user@example.com"
     }
   }'
@@ -100,6 +100,7 @@ Watch logs:
 ```sh
 kubectl logs -n ${NAMESPACE} -l asya.sh/asya=sentiment-analyzer -c asya-runtime -f
 kubectl logs -n ${NAMESPACE} -l asya.sh/asya=decision-router -c asya-runtime -f
+kubectl logs -n ${NAMESPACE} -l asya.sh/asya=response-aggregator -c asya-runtime -f
 ```
 
 ### Clean up

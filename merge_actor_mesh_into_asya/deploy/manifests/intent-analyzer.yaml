@@ -1,0 +1,23 @@
+apiVersion: asya.sh/v1alpha1
+kind: AsyncActor
+metadata:
+  name: intent-analyzer
+  labels:
+    app: example-ecom
+spec:
+  transport: sqs
+  scaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 5
+    queueLength: 1
+  workload:
+    kind: Deployment
+    template:
+      spec:
+        containers:
+        - name: asya-runtime
+          image: actor-mesh-asya:dev
+          env:
+          - name: ASYA_HANDLER
+            value: "handlers.intent_analyzer.IntentAnalyzer.process"

@@ -34,7 +34,10 @@ class DecisionRouter:
         intent = payload.get("intent") or {}
         context = payload.get("context") or {}
 
+        logging.info("DecisionRouter: current=%s, actors=%s", current, route.get("actors"))
         self._make_routing_decisions(route, current, sentiment, intent, context)
+        self._advance_route_pointer(route, current)
+        logging.info("DecisionRouter: advanced to current=%s, actors=%s", route.get("current"), route.get("actors"))
         return envelope
 
     def _make_routing_decisions(
@@ -71,7 +74,14 @@ class DecisionRouter:
 
         if changes:
             logging.info("Applied routing changes: %s", changes)
+        return changes
 
+    def _advance_route_pointer(self, route: Dict[str, Any], current: int) -> None:
+        """Move the pointer to the next actor so the runtime forwards correctly."""
+        if route.get("actors"):
+            route["current"] = min(current + 1, len(route["actors"]) - 1)
+        else:
+            route["current"] = current + 1
 
     def _should_escalate_immediately(
         self, sentiment: Dict[str, Any], intent: Dict[str, Any], context: Dict[str, Any]
