@@ -68,9 +68,9 @@ For debugging, check operator logs:
 kubectl -n asya-system logs -l app.kubernetes.io/instance=asya-operator -f
 ```
 
-Port-forward SQS ports to localhost for testing (in a separate terminal, LocalStack runs in `asya-e2e`):
+Port-forward SQS ports to localhost for testing (in a separate terminal; LocalStack runs in `asya-system`):
 ```sh
-kubectl -n asya-e2e port-forward svc/localstack-sqs 4566:4566
+kubectl -n asya-system port-forward svc/localstack-sqs 4566:4566
 ```
 
 Set dummy AWS creds/region (shell where you send messages):
