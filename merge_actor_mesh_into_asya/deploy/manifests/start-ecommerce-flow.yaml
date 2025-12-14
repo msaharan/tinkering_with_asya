@@ -1,0 +1,39 @@
+apiVersion: asya.sh/v1alpha1
+kind: AsyncActor
+metadata:
+  name: start-ecommerce-flow
+  labels:
+    app: example-ecom
+spec:
+  transport: sqs
+  scaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 3
+    queueLength: 1
+  workload:
+    kind: Deployment
+    template:
+      spec:
+        containers:
+        - name: asya-runtime
+          image: ecommerce-flow-routers:dev  # build from /tmp/ecommerce_flow_compiled/routers.py
+          env:
+          - name: ASYA_HANDLER
+            value: "routers.start_ecommerce_flow"
+          - name: ASYA_HANDLER_MODE
+            value: envelope
+          - name: ASYA_HANDLER_SENTIMENT_ANALYZER
+            value: "handlers.sentiment_analyzer.SentimentAnalyzer.process"
+          - name: ASYA_HANDLER_INTENT_ANALYZER
+            value: "handlers.intent_analyzer.IntentAnalyzer.process"
+          - name: ASYA_HANDLER_CONTEXT_RETRIEVER
+            value: "handlers.context_retriever.ContextRetriever.process"
+          - name: ASYA_HANDLER_RESPONSE_GENERATOR
+            value: "handlers.response_generator.ResponseGenerator.process"
+          - name: ASYA_HANDLER_GUARDRAIL_VALIDATOR
+            value: "handlers.guardrail_validator.GuardrailValidator.process"
+          - name: ASYA_HANDLER_EXECUTION_COORDINATOR
+            value: "handlers.execution_coordinator.ExecutionCoordinator.process"
+          - name: ASYA_HANDLER_RESPONSE_AGGREGATOR
+            value: "handlers.response_aggregator.ResponseAggregator.process"
