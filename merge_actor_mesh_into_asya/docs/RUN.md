@@ -42,81 +42,22 @@ kind load docker-image actor-mesh-asya:dev --name ${CLUSTER_NAME}
 kubectl -n ${NAMESPACE} delete pods -l app=example-ecom || true
 ```
 
-Deploy single actor:
-```sh
-ACTOR_NAME="decision-router"
-# Ensure sqs-secret exists in the same namespace before applying; otherwise the Deployment won't be created
-kubectl -n ${NAMESPACE} apply -f deploy/manifests/${ACTOR_NAME}.yaml
-kubectl -n ${NAMESPACE} get asya ${ACTOR_NAME}
-kubectl -n ${NAMESPACE} wait --for=condition=available --timeout=120s "deployment/$ACTOR_NAME"
-```
-(wait for 2/2 Ready)
-
-Deploy all actors:
-```sh
-for file in deploy/manifests/*.yaml; do
-    ACTOR_NAME=$(basename "$file" .yaml)
-    echo "Deploying Actor: $ACTOR_NAME"
-    kubectl -n ${NAMESPACE} apply -f "$file"
-    kubectl -n ${NAMESPACE} get asya "$ACTOR_NAME"
-    kubectl -n ${NAMESPACE} wait --for=condition=available --timeout=120s "deployment/$ACTOR_NAME"
-done
-```
-
-For debugging, check operator logs:
-```sh
-kubectl -n asya-system logs -l app.kubernetes.io/instance=asya-operator -f
-```
-
 ## Flow DSL (start-ecommerce-flow) end-to-end
 
-This section shows how to compile the Flow DSL (`flows/ecommerce_flow.py`) into routers,
-build the routers image, load it into kind, deploy the start actor, and send a test message
-to the start queue. It assumes you have the main `asya` repo cloned alongside this repo.
+This section shows how to compile the Flow DSL (`flows/ecommerce_flow.py`) into routers, build the routers image, load it into kind, deploy the start actor, and send a test message to the start queue. It assumes you have the main `asya` repo cloned alongside this repo.
 
-### 1) Compile flow and generate routers
+### Flow build/deploy (automated)
 ```sh
 # From this repo root
 cd /path/to/tinkering_with_asya/merge_actor_mesh_into_asya
 
-# Use the asya-cli in the sibling repo; ensure Python ≥ 3.10
-PYTHONPATH=.:/path/to/deliveryhero/asya/src/asya-cli \
-  python3.13 /path/to/deliveryhero/asya/src/asya-cli/asya_cli/flow_cli.py \
-    compile flows/ecommerce_flow.py \
-    --output-dir /tmp/ecommerce_flow_compiled \
-    --overwrite --plot --plot-width 50
-
-# Outputs:
-#   /tmp/ecommerce_flow_compiled/routers.py  (used in the image)
-#   /tmp/ecommerce_flow_compiled/flow.dot    (diagram)
-#   /tmp/ecommerce_flow_compiled/flow.png    (diagram, if graphviz installed)
+# One-and-done: compile flow, stage runtime, build image, load into kind, restart start-ecommerce-flow
+make flow-all
 ```
+Defaults (override if needed): `ASYA_ROOT=../../deliveryhero/asya`, `CLUSTER_NAME=asya-e2e-sqs-s3`, `NAMESPACE=example-ecom`, `ROUTERS_IMG=ecommerce-flow-routers:dev`.
 
-### 2) Build the routers image and load into kind
-```sh
-cd /tmp/ecommerce_flow_compiled
-cat > Dockerfile <<'EOF'
-FROM python:3.13-slim
-WORKDIR /app
-COPY routers.py /app/routers.py
-CMD ["python3", "-c", "import routers; print('routers loaded')"]
-EOF
-
-docker build -t ecommerce-flow-routers:dev .
-
-# Load into kind (set your cluster name)
-export CLUSTER_NAME="asya-e2e-sqs-s3"   # or whatever you used above
-kind load docker-image ecommerce-flow-routers:dev --name "${CLUSTER_NAME}"
-```
-
-### 3) Deploy the flow start actor
-```sh
-cd /path/to/tinkering_with_asya/merge_actor_mesh_into_asya
-
-# Apply the generated start actor (uses the image above)
-kubectl -n ${NAMESPACE} apply -f deploy/manifests/start-ecommerce-flow.yaml
-kubectl -n ${NAMESPACE} wait --for=condition=available --timeout=120s deployment/start-ecommerce-flow
-```
+> If this is your first time, ensure the start actor is applied once:
+> `kubectl -n ${NAMESPACE} apply -f deploy/manifests/start-ecommerce-flow.yaml`
 
 ### 4) Ensure handlers are deployed
 Deploy/refresh your existing payload-mode handlers (image tag may be `actor-mesh-asya:dev` or your own):
@@ -141,10 +82,10 @@ export AWS_REGION=us-east-1
 
 # Send to the start actor queue (note: only the start actor in the route;
 # it will inject the rest automatically)
-KIND_SQS_BASE_URL="http://localhost:4566/000000000000"
+QUEUE_URL="http://localhost:4566/000000000000/asya-example-ecom-start-ecommerce-flow"
 
 aws --endpoint-url http://localhost:4566 sqs send-message \
-  --queue-url "${KIND_SQS_BASE_URL}/asya-start-ecommerce-flow" \
+  --queue-url "${QUEUE_URL}" \
   --message-body '{
     "id": "demo-flow-1",
     "route": {"actors": ["start-ecommerce-flow"], "current": 0},
@@ -157,9 +98,10 @@ aws --endpoint-url http://localhost:4566 sqs send-message \
 
 ### 6) Watch logs
 ```sh
-kubectl logs -n ${NAMESPACE} -l asya.sh/asya=start-ecommerce-flow -c asya-runtime -f
-kubectl logs -n ${NAMESPACE} -l asya.sh/asya=sentiment-analyzer -c asya-runtime -f
-kubectl logs -n ${NAMESPACE} -l asya.sh/asya=response-aggregator -c asya-runtime -f
+kubectl logs -n ${NAMESPACE} -l asya.sh/asya=start-ecommerce-flow -c asya-runtime -f --tail=100
+kubectl logs -n ${NAMESPACE} -l asya.sh/asya=sentiment-analyzer -c asya-runtime -f --tail=100
+kubectl logs -n ${NAMESPACE} -l asya.sh/asya=response-aggregator -c asya-runtime -f --tail=100
+# optionally: add more handlers (intent-analyzer, context-retriever, response-generator, guardrail-validator, execution-coordinator)
 ```
 
 ### Clean up
