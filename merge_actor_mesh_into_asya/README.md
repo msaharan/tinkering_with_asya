@@ -4,13 +4,21 @@ This project is being developed as part of the [Asya](https://github.com/deliver
 
 We will take the business logic from [Actor Mesh Demo](https://github.com/msaharan/actor-mesh-demo) and integrate it into Asya such that the entire system is deployed on a local kind cluster.
 
-## Directory Structure
+## Directory structure
 
 ```
 merge_actor_mesh_into_asya/
-├── Dockerfile                  # Builds the handler image for the Asya actors
+├── Dockerfile                     # Handler image for the ported Actor Mesh actors
+├── Dockerfile.ecommerce-runtime   # Runtime image for the compiled Flow routers
+├── Makefile                       # Flow compile/build/load/restart helpers
+├── build/                         # Generated routers, runtime shim, and diagrams
+│   └── ecommerce_flow_compiled/
+│       ├── routers.py             # Flow DSL compiled into router functions
+│       ├── flow.dot / flow.png    # Flow visualization
+│       └── Dockerfile             # Build context for the routers image
 ├── deploy/
-│   └── manifests/              # AsyncActor definitions for each stage in the pipeline
+│   └── manifests/                 # AsyncActor definitions
+│       ├── start-ecommerce-flow.yaml  # Flow entrypoint (SQS → routers image)
 │       ├── context-retriever.yaml
 │       ├── decision-router.yaml
 │       ├── escalation-router.yaml
@@ -20,11 +28,13 @@ merge_actor_mesh_into_asya/
 │       ├── response-aggregator.yaml
 │       ├── response-generator.yaml
 │       └── sentiment-analyzer.yaml
-├── docs/                       # Implementation notes and run instructions
-│   ├── RUN.md
+├── docs/                          # Implementation notes and run steps
+│   ├── RUN.md                     # End-to-end setup/run/teardown commands
 │   ├── comparison_actormeshdemo_with_asya_implementation.md
 │   └── implementation.md
-├── handlers/                   # Ported handler logic for each actor
+├── flows/
+│   └── ecommerce_flow.py          # Flow DSL that wires the handlers together
+├── handlers/                      # Ported Actor Mesh handler logic
 │   ├── context_retriever.py
 │   ├── decision_router.py
 │   ├── escalation_router.py
@@ -34,9 +44,6 @@ merge_actor_mesh_into_asya/
 │   ├── response_aggregator.py
 │   ├── response_generator.py
 │   └── sentiment_analyzer.py
-├── selected_logs/              # Representative logs from a local Asya deployment
-│   ├── asya-decision-router-log.txt
-│   ├── asya-response-aggregator-log.txt
-│   └── asya-sentiment-analyzer-log.txt
+├── selected_logs/                 # Representative logs from a local Asya deployment
 └── README.md
 ```
