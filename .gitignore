@@ -1,6 +1,9 @@
 # DS_Store
 *.DS_Store
 
+# Allow runtime Dockerfile in merge_actor_mesh_into_asya
+!merge_actor_mesh_into_asya/Dockerfile.ecommerce-runtime
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

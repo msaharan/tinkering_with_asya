@@ -1,0 +1,13 @@
+FROM python:3.13-slim
+WORKDIR /app
+
+# Copy compiled routers and handlers from project build/output
+COPY build/ecommerce_flow_compiled/routers.py /app/routers.py
+COPY handlers /app/handlers
+
+# Copy the lightweight runtime script staged in build/
+COPY build/asya_runtime.py /opt/asya/asya_runtime.py
+
+ENV PYTHONPATH=/app
+
+CMD ["python3", "/opt/asya/asya_runtime.py"]

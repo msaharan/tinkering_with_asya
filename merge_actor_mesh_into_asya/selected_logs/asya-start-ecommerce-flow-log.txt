@@ -1,0 +1,11 @@
+(asyaenv) ➜  merge_actor_mesh_into_asya git:(main) kubectl logs -n ${NAMESPACE} -l asya.sh/asya=decision-router -c asya-runtime -f
+2025-12-04 15:21:29 - asya.runtime - INFO - Loading class handler: module=handlers.decision_router class=DecisionRouter method=process
+2025-12-04 15:21:29 - asya.runtime - INFO - Instantiated class handler: DecisionRouter
+2025-12-04 15:21:29 - asya.runtime - INFO - Socket permissions set to 0o666
+2025-12-04 15:21:29 - asya.runtime - INFO - Socket server listening on /var/run/asya/asya-runtime.sock
+2025-12-04 15:21:29 - asya.runtime - INFO - Runtime ready signal created: /var/run/asya/runtime-ready
+2025-12-04 15:21:29 - asya.runtime - WARNING - Client disconnected
+2025-12-04 15:22:30 - asya.runtime - INFO - [DIAG] Starting handler execution, mode=envelope, envelope_id=demo-7
+2025-12-04 15:22:30 - root - INFO - DecisionRouter: current=3, actors=['sentiment-analyzer', 'intent-analyzer', 'context-retriever', 'decision-router', 'response-generator', 'guardrail-validator', 'execution-coordinator', 'response-aggregator']
+2025-12-04 15:22:30 - root - INFO - DecisionRouter: advanced to current=4, actors=['sentiment-analyzer', 'intent-analyzer', 'context-retriever', 'decision-router', 'response-generator', 'guardrail-validator', 'execution-coordinator', 'response-aggregator']
+2025-12-04 15:22:30 - asya.runtime - INFO - [DIAG] Handler completed successfully: returning 1 response(s)

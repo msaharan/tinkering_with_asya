@@ -20,7 +20,7 @@ flow-build: flow-compile
 	mkdir -p build
 	cp $(ASYA_ROOT)/src/asya-runtime/asya_runtime.py build/asya_runtime.py
 	@echo "[+] Building routers image $(ROUTERS_IMG)"
-	docker build -f build/Dockerfile.ecommerce-runtime -t $(ROUTERS_IMG) .
+	docker build -f Dockerfile.ecommerce-runtime -t $(ROUTERS_IMG) .
 	@echo "[+] Loading image into kind cluster $(CLUSTER_NAME)"
 	kind load docker-image $(ROUTERS_IMG) --name "$(CLUSTER_NAME)"
 

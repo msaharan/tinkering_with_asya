@@ -1,12 +1,15 @@
-(asyaenv) ➜  merge_actor_mesh_into_asya git:(main) kubectl logs -n ${NAMESPACE} -l asya.sh/asya=sentiment-analyzer -c asya-runtime -f
-
-2025-12-04 15:21:42 - asya.runtime - INFO - Socket permissions set to 0o666
-2025-12-04 15:21:42 - asya.runtime - INFO - Socket server listening on /var/run/asya/asya-runtime.sock
-2025-12-04 15:21:42 - asya.runtime - INFO - Runtime ready signal created: /var/run/asya/runtime-ready
-2025-12-04 15:21:42 - asya.runtime - WARNING - Client disconnected
-2025-12-04 15:22:22 - asya.runtime - INFO - [DIAG] Starting handler execution, mode=payload, envelope_id=demo-7
-2025-12-04 15:22:22 - asya.runtime - INFO - [DIAG] Calling user_func with payload: {'customer_message': 'Where is my order 12345? It is one day late.', 'customer_email': 'user@example.com'}
-2025-12-04 15:22:22 - root - INFO - Processing sentiment for user@example.com
-2025-12-04 15:22:22 - root - INFO - Sentiment completed: negative (confidence 1.00, urgency medium)
-2025-12-04 15:22:22 - asya.runtime - INFO - [DIAG] user_func returned: {'customer_message': 'Where is my order 12345? It is one day late.', 'customer_email': 'user@example.com', 'sentiment': {'sentiment': {'label': 'negative', 'confidence': 1.0, 'score': -1.0, 'keywords': ['late']}, 'urgency': {'level': 'medium', 'score': 1, 'keywords': ['late']}, 'is_complaint': True, 'escalation_needed': False, 'keywords_detected': {'sentiment_keywords': ['late'], 'urgency_keywords': ['late'], 'complaint_keywords': ['order', 'late'], 'escalation_keywords': []}, 'analysis_method': 'rule_based', 'processed_at': '2025-12-04T15:22:22.284647+00:00', 'model_info': {'analyzer_type': 'rule_based', 'version': '1.0.0', 'compatible_with': 'all_platforms'}}}
-2025-12-04 15:22:22 - asya.runtime - INFO - [DIAG] Handler completed successfully: returning 1 response(s)
+(asyaenv) ➜  merge_actor_mesh_into_asya git:(testing-dh-asya-pr-58) ✗ kubectl logs -n ${NAMESPACE} -l asya.sh/asya=sentiment-analyzer -c asya-runtime -f --tail=100
+2025-12-14 22:00:24 - asya.runtime - INFO - Asya Actor Runtime starting with handler: handlers.sentiment_analyzer.SentimentAnalyzer.process (mode: payload, validation: True)
+2025-12-14 22:00:24 - asya.runtime - INFO - Loading class handler: module=handlers.sentiment_analyzer class=SentimentAnalyzer method=process
+2025-12-14 22:00:24 - asya.runtime - INFO - Instantiated class handler: SentimentAnalyzer
+2025-12-14 22:00:24 - asya.runtime - INFO - Socket permissions set to 0o666
+2025-12-14 22:00:24 - asya.runtime - INFO - Socket server listening on /var/run/asya/asya-runtime.sock
+2025-12-14 22:00:24 - asya.runtime - INFO - Runtime ready signal created: /var/run/asya/runtime-ready
+2025-12-14 22:00:24 - asya.runtime - WARNING - Client disconnected
+2025-12-14 22:01:15 - asya.runtime - INFO - [DIAG] Starting handler execution, mode=payload, envelope_id=demo-flow-1
+2025-12-14 22:01:15 - asya.runtime - INFO - [DIAG] Calling user_func with payload: {'customer_message': 'Where is my order 12345? It is one day late.', 'customer_email': 'user@example.com'}
+2025-12-14 22:01:15 - root - INFO - Processing sentiment for user@example.com
+2025-12-14 22:01:15 - root - INFO - Sentiment completed: negative (confidence 1.00, urgency medium)
+2025-12-14 22:01:15 - asya.runtime - INFO - [DIAG] user_func returned: {'customer_message': 'Where is my order 12345? It is one day late.', 'customer_email': 'user@example.com', 'sentiment': {'sentiment': {'label': 'negative', 'confidence': 1.0, 'score': -1.0, 'keywords': ['late']}, 'urgency': {'level': 'medium', 'score': 1, 'keywords': ['late']}, 'is_complaint': True, 'escalation_needed': False, 'keywords_detected': {'sentiment_keywords': ['late'], 'urgency_keywords': ['late'], 'complaint_keywords': ['order', 'late'], 'escalation_keywords': []}, 'analysis_method': 'rule_based', 'processed_at': '2025-12-14T22:01:15.626244+00:00', 'model_info': {'analyzer_type': 'rule_based', 'version': '1.0.0', 'compatible_with': 'all_platforms'}}}
+2025-12-14 22:01:15 - asya.runtime - INFO - [DIAG] Handler completed successfully: returning 1 response(s)
+^C%   
